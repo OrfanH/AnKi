@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Русский – Vokabeln lernen</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a35;
+    --accent: #e8c547;
+    --accent2: #7c6fff;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --success: #4ade80;
+    --danger: #f87171;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    max-width: 640px;
+    padding: 28px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo { font-family: 'Unbounded', sans-serif; font-size: 1.1rem; color: var(--accent); letter-spacing: -0.02em; }
+  .logo span { color: var(--muted); }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: var(--muted); }
+  .progress-bar { width: 100px; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+
+  main {
+    width: 100%; max-width: 640px;
+    padding: 24px 20px 40px;
+    flex: 1; display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .screen { display: none; flex-direction: column; gap: 16px; }
+  .screen.active { display: flex; animation: fadeIn 0.22s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── HOME ── */
+  .home-hero {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px 28px; text-align: center;
+  }
+  .home-hero h1 { font-family: 'Unbounded', sans-serif; font-size: clamp(1.6rem,5vw,2.2rem); line-height: 1.2; margin-bottom: 8px; }
+  .home-hero h1 em { color: var(--accent); font-style: normal; }
+  .home-hero > p { color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; line-height: 1.6; }
+
+  .stat-row { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Unbounded', sans-serif; font-size: 1.8rem; color: var(--accent); display: block; }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .section-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+
+  .dir-picker { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+  .dir-btn {
+    flex: 1; max-width: 200px; padding: 10px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--muted); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+  }
+  .dir-btn:hover, .dir-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,0.07); }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .mode-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 14px; cursor: pointer;
+    text-align: left; transition: all 0.18s; font-family: 'JetBrains Mono', monospace;
+  }
+  .mode-card:hover { border-color: var(--accent2); background: rgba(124,111,255,0.07); }
+  .mode-card.selected { border-color: var(--accent); background: rgba(232,197,71,0.07); }
+  .mode-card-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+  .mode-card-name { font-size: 0.82rem; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px; }
+  .mode-card-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 28px; border-radius: 10px; border: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: all 0.18s; width: 100%;
+  }
+  .btn-primary { background: var(--accent); color: #0d0d0f; }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--muted); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+  .btn-success { background: rgba(74,222,128,0.15); color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+  .btn-danger  { background: rgba(248,113,113,0.15); color: var(--danger);  border: 1px solid rgba(248,113,113,0.3); }
+
+  /* ── MODE BADGE ── */
+  .mode-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border);
+    font-size: 0.72rem; color: var(--muted); background: var(--surface2); align-self: flex-start;
+  }
+  .mode-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ── STEPS ── */
+  .steps { display: flex; gap: 6px; justify-content: center; }
+  .step { height: 3px; flex: 1; max-width: 80px; border-radius: 99px; background: var(--border); transition: background 0.3s; }
+  .step.done    { background: var(--accent); }
+  .step.current { background: var(--accent2); }
+  .session-info { font-size: 0.72rem; color: var(--muted); text-align: center; }
+
+  /* ── FLASHCARD ── */
+  .card-scene { perspective: 1000px; height: 280px; }
+  .card-inner {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px; gap: 12px;
+  }
+  .card-back { transform: rotateY(180deg); }
+  .card-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .card-word { font-family: 'Unbounded', sans-serif; font-size: clamp(1.4rem,5vw,2.2rem); text-align: center; line-height: 1.3; color: var(--text); }
+  .card-transliteration { font-size: 0.9rem; color: var(--muted); font-style: italic; }
+  .card-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; animation: pulse 2s infinite; cursor: pointer; }
+  @keyframes pulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+
+  .speak-btn {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 8px 16px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .speak-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .flip-back-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 6px 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .flip-back-btn:hover { color: var(--text); border-color: var(--muted); }
+
+  .card-actions { display: flex; gap: 10px; }
+  .card-actions .btn { flex: 1; }
+
+  /* ── MULTIPLE CHOICE ── */
+  .mc-question {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+    text-align: center; min-height: 140px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    position: relative;
+  }
+  .mc-speak-btn {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+    padding: 6px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .mc-speak-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .mc-word { font-family: 'Unbounded', sans-serif; font-size: clamp(1.3rem,4vw,2rem); color: var(--text); line-height: 1.3; }
+  .mc-sub  { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+
+  .mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mc-opt {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    color: var(--text); cursor: pointer; transition: all 0.18s; text-align: center; line-height: 1.4;
+  }
+  .mc-opt:hover    { border-color: var(--accent2); color: var(--accent2); background: rgba(124,111,255,0.07); }
+  .mc-opt.correct  { border-color: var(--success); color: var(--success); background: rgba(74,222,128,0.1); pointer-events: none; }
+  .mc-opt.wrong    { border-color: var(--danger);  color: var(--danger);  background: rgba(248,113,113,0.1); pointer-events: none; }
+  .mc-opt.disabled { pointer-events: none; opacity: 0.45; }
+
+  /* ── TYPE ── */
+  .type-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .type-word { font-family: 'Unbounded', sans-serif; font-size: clamp(1.3rem,4vw,2rem); color: var(--text); }
+  .type-input {
+    width: 100%; max-width: 360px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem; color: var(--text); text-align: center; outline: none; transition: border-color 0.2s;
+  }
+  .type-input:focus   { border-color: var(--accent2); }
+  .type-input.correct { border-color: var(--success); background: rgba(74,222,128,0.07); }
+  .type-input.wrong   { border-color: var(--danger);  background: rgba(248,113,113,0.07); }
+  .type-feedback { font-size: 0.82rem; min-height: 20px; }
+  .type-feedback.correct { color: var(--success); }
+  .type-feedback.wrong   { color: var(--danger); }
+
+  /* ── END ── */
+  .session-end {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px 28px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .session-end h2 { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; }
+  .session-end h2 em { color: var(--accent); font-style: normal; }
+  .end-stats { display: flex; gap: 28px; justify-content: center; margin: 8px 0; }
+  .end-stat-num { font-family: 'Unbounded', sans-serif; font-size: 2rem; display: block; }
+  .end-stat-num.green { color: var(--success); }
+  .end-stat-num.red   { color: var(--danger); }
+  .end-stat-label { font-size: 0.7rem; color: var(--muted); }
+
+  .notice {
+    background: rgba(124,111,255,0.08); border: 1px solid rgba(124,111,255,0.25);
+    border-radius: 10px; padding: 14px 18px; font-size: 0.75rem; color: var(--muted); line-height: 1.6;
+  }
+  .notice strong { color: var(--accent2); }
+
+  @media (max-width: 400px) {
+    .mc-options { grid-template-columns: 1fr; }
+    .stat-row   { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Рус<span>ский</span></div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <span id="progText">0 / 100</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══ HOME ══ -->
+  <div class="screen active" id="screenHome">
+    <div class="home-hero">
+      <h1>Russisch<br><em>lernen.</em></h1>
+      <p>100 Anfängervokabeln · 4 Lernmodi</p>
+
+      <div class="stat-row">
+        <div class="stat"><span class="stat-num" id="statMastered">0</span><span class="stat-label">Beherrscht</span></div>
+        <div class="stat"><span class="stat-num" id="statLearning">0</span><span class="stat-label">In Übung</span></div>
+        <div class="stat"><span class="stat-num">100</span><span class="stat-label">Gesamt</span></div>
+      </div>
+
+      <p class="section-label">Lernrichtung</p>
+      <div class="dir-picker">
+        <button class="dir-btn active" id="dirDE" onclick="setDir('de')">DE → RU</button>
+        <button class="dir-btn" id="dirRU" onclick="setDir('ru')">RU → DE</button>
+      </div>
+
+      <p class="section-label">Modus wählen</p>
+      <div class="mode-grid">
+        <button class="mode-card selected" id="modeCard" onclick="selectMode('card')">
+          <span class="mode-card-icon">🃏</span>
+          <span class="mode-card-name">Karteikarte</span>
+          <span class="mode-card-desc">Wort kennenlernen, umdrehen, selbst bewerten</span>
+        </button>
+        <button class="mode-card" id="modeMc" onclick="selectMode('mc')">
+          <span class="mode-card-icon">🔤</span>
+          <span class="mode-card-name">Multiple Choice</span>
+          <span class="mode-card-desc">4 Optionen + Audio, ideal zum Einstieg</span>
+        </button>
+        <button class="mode-card" id="modeType" onclick="selectMode('type')">
+          <span class="mode-card-icon">⌨️</span>
+          <span class="mode-card-name">Tippen</span>
+          <span class="mode-card-desc">Aktives Abrufen, wenn Wörter schon sitzen</span>
+        </button>
+        <button class="mode-card" id="modeMix" onclick="selectMode('mix')">
+          <span class="mode-card-icon">🔀</span>
+          <span class="mode-card-name">Gemischt</span>
+          <span class="mode-card-desc">Zufällige Mischung aller drei Modi</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startSession()">▶ Session starten</button>
+
+    <div class="notice">
+      <strong>Supabase nicht verbunden</strong><br>
+      Fortschritt wird lokal gespeichert. Trage Supabase URL + Key im Code ein für geräteübergreifende Synchronisation.
+    </div>
+  </div>
+
+  <!-- ══ FLASHCARD ══ -->
+  <div class="screen" id="screenCard">
+    <div class="mode-badge"><span class="dot"></span> Karteikarte</div>
+    <div class="steps" id="stepsCard"></div>
+    <div class="session-info" id="sessionInfoCard"></div>
+
+    <div class="card-scene">
+      <div class="card-inner" id="cardInner">
+        <div class="card-face card-front" onclick="flipCard()">
+          <span class="card-label" id="cardFrontLabel">Deutsch</span>
+          <div class="card-word" id="cardFrontWord">—</div>
+          <div class="card-hint">Tippe zum Umdrehen ↩</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-label" id="cardBackLabel">Russisch</span>
+          <div class="card-word" id="cardBackWord">—</div>
+          <div class="card-transliteration" id="cardTranslit"></div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="speak-btn" onclick="speakCurrent()">🔊 Anhören</button>
+            <button class="flip-back-btn" onclick="flipCardBack()">↩ Zurück</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions" id="cardActions" style="display:none">
+      <button class="btn btn-danger"  onclick="rateCard(false)">✗ Neu für mich</button>
+      <button class="btn btn-success" onclick="rateCard(true)">✓ Kannte ich</button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ MULTIPLE CHOICE ══ -->
+  <div class="screen" id="screenMC">
+    <div class="mode-badge"><span class="dot" style="background:var(--accent2)"></span> Multiple Choice</div>
+    <div class="steps" id="stepsMC"></div>
+    <div class="session-info" id="sessionInfoMC"></div>
+
+    <div class="mc-question">
+      <button class="mc-speak-btn" onclick="speakCurrent()">🔊 Anhören</button>
+      <span class="card-label" id="mcLabel">Was bedeutet …?</span>
+      <div class="mc-word" id="mcWord">—</div>
+      <div class="mc-sub" id="mcSub"></div>
+    </div>
+
+    <div class="mc-options" id="mcOptions"></div>
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ TYPE ══ -->
+  <div class="screen" id="screenType">
+    <div class="mode-badge"><span class="dot" style="background:var(--success)"></span> Tippen</div>
+    <div class="steps" id="stepsType"></div>
+    <div class="session-info" id="sessionInfoType"></div>
+
+    <div class="type-box">
+      <span class="card-label" id="typeLabel">Wie heißt …?</span>
+      <div class="type-word" id="typeWord">—</div>
+      <div class="mc-sub" id="typeSub"></div>
+      <input class="type-input" id="typeInput"
+        placeholder="Antwort eingeben…"
+        onkeydown="typeKeydown(event)"
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="type-feedback" id="typeFeedback"></div>
+      <button class="btn btn-secondary" id="typeCheckBtn" onclick="checkType()" style="max-width:200px">Prüfen</button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ SESSION END ══ -->
+  <div class="screen" id="screenEnd">
+    <div class="session-end">
+      <div style="font-size:2.5rem">🎉</div>
+      <h2>Session <em>abgeschlossen!</em></h2>
+      <div class="end-stats">
+        <div class="stat"><span class="end-stat-num green" id="endCorrect">0</span><span class="end-stat-label">Richtig</span></div>
+        <div class="stat"><span class="end-stat-num red"   id="endWrong">0</span><span class="end-stat-label">Falsch</span></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);line-height:1.6" id="endMsg"></p>
+      <button class="btn btn-primary" onclick="startSession()">↺ Neue Session</button>
+      <button class="btn btn-ghost"   onclick="goHome()">← Zurück</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ════════════════════════════════════════════════
+//  SUPABASE CONFIG  (hier eintragen wenn bereit)
+// ════════════════════════════════════════════════
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';
+
+// ════════════════════════════════════════════════
+//  VOKABELN  (100 Einträge)
+// ════════════════════════════════════════════════
+const VOCAB = [
+  {de:'Hallo',           ru:'Привет',         tr:'Privet'},
+  {de:'Guten Morgen',    ru:'Доброе утро',    tr:'Dobroye utro'},
+  {de:'Guten Abend',     ru:'Добрый вечер',   tr:'Dobryy vecher'},
+  {de:'Gute Nacht',      ru:'Спокойной ночи', tr:'Spokoynoy nochi'},
+  {de:'Auf Wiedersehen', ru:'До свидания',    tr:'Do svidaniya'},
+  {de:'Tschüss',         ru:'Пока',           tr:'Poka'},
+  {de:'Danke',           ru:'Спасибо',        tr:'Spasibo'},
+  {de:'Bitte',           ru:'Пожалуйста',     tr:'Pozhaluysta'},
+  {de:'Entschuldigung',  ru:'Извините',       tr:'Izvinite'},
+  {de:'Ja',              ru:'Да',             tr:'Da'},
+  {de:'Nein',            ru:'Нет',            tr:'Net'},
+  {de:'Ich',             ru:'Я',              tr:'Ya'},
+  {de:'Du',              ru:'Ты',             tr:'Ty'},
+  {de:'Er',              ru:'Он',             tr:'On'},
+  {de:'Sie (sie)',       ru:'Она',            tr:'Ona'},
+  {de:'Wir',             ru:'Мы',             tr:'My'},
+  {de:'Ihr',             ru:'Вы',             tr:'Vy'},
+  {de:'Sie (sie pl.)',   ru:'Они',            tr:'Oni'},
+  {de:'Sein / Haben',    ru:'Быть',           tr:'Byt\''},
+  {de:'Machen / Tun',    ru:'Делать',         tr:'Delat\''},
+  {de:'Gehen',           ru:'Идти',           tr:'Idti'},
+  {de:'Kommen',          ru:'Приходить',      tr:'Prikhodit\''},
+  {de:'Sehen',           ru:'Видеть',         tr:'Videt\''},
+  {de:'Wissen',          ru:'Знать',          tr:'Znat\''},
+  {de:'Wollen',          ru:'Хотеть',         tr:'Khotet\''},
+  {de:'Können',          ru:'Мочь',           tr:'Moch\''},
+  {de:'Sagen',           ru:'Говорить',       tr:'Govorit\''},
+  {de:'Fragen',          ru:'Спрашивать',     tr:'Sprashivat\''},
+  {de:'Essen',           ru:'Есть',           tr:'Yest\''},
+  {de:'Trinken',         ru:'Пить',           tr:'Pit\''},
+  {de:'Schlafen',        ru:'Спать',          tr:'Spat\''},
+  {de:'Arbeiten',        ru:'Работать',       tr:'Rabotat\''},
+  {de:'Wohnen / Leben',  ru:'Жить',           tr:'Zhit\''},
+  {de:'Lesen',           ru:'Читать',         tr:'Chitat\''},
+  {de:'Schreiben',       ru:'Писать',         tr:'Pisat\''},
+  {de:'Hören',           ru:'Слышать',        tr:'Slyshat\''},
+  {de:'Verstehen',       ru:'Понимать',       tr:'Ponimat\''},
+  {de:'Lieben',          ru:'Любить',         tr:'Lyubit\''},
+  {de:'Kaufen',          ru:'Покупать',       tr:'Pokupat\''},
+  {de:'Fahren',          ru:'Ехать',          tr:'Yekhat\''},
+  {de:'Mann',            ru:'Мужчина',        tr:'Muzhchina'},
+  {de:'Frau',            ru:'Женщина',        tr:'Zhenshchina'},
+  {de:'Kind',            ru:'Ребёнок',        tr:'Rebyonok'},
+  {de:'Vater',           ru:'Отец',           tr:'Otets'},
+  {de:'Mutter',          ru:'Мать',           tr:'Mat\''},
+  {de:'Bruder',          ru:'Брат',           tr:'Brat'},
+  {de:'Schwester',       ru:'Сестра',         tr:'Sestra'},
+  {de:'Freund',          ru:'Друг',           tr:'Drug'},
+  {de:'Haus',            ru:'Дом',            tr:'Dom'},
+  {de:'Wohnung',         ru:'Квартира',       tr:'Kvartira'},
+  {de:'Zimmer',          ru:'Комната',        tr:'Komnata'},
+  {de:'Küche',           ru:'Кухня',          tr:'Kukhnya'},
+  {de:'Straße',          ru:'Улица',          tr:'Ulitsa'},
+  {de:'Stadt',           ru:'Город',          tr:'Gorod'},
+  {de:'Land',            ru:'Страна',         tr:'Strana'},
+  {de:'Schule',          ru:'Школа',          tr:'Shkola'},
+  {de:'Arbeit',          ru:'Работа',         tr:'Rabota'},
+  {de:'Buch',            ru:'Книга',          tr:'Kniga'},
+  {de:'Wasser',          ru:'Вода',           tr:'Voda'},
+  {de:'Brot',            ru:'Хлеб',           tr:'Khleb'},
+  {de:'Milch',           ru:'Молоко',         tr:'Moloko'},
+  {de:'Fleisch',         ru:'Мясо',           tr:'Myaso'},
+  {de:'Obst',            ru:'Фрукты',         tr:'Frukty'},
+  {de:'Gemüse',          ru:'Овощи',          tr:'Ovoshchi'},
+  {de:'Auto',            ru:'Машина',         tr:'Mashina'},
+  {de:'Zug',             ru:'Поезд',          tr:'Poyezd'},
+  {de:'Flugzeug',        ru:'Самолёт',        tr:'Samolyot'},
+  {de:'Geld',            ru:'Деньги',         tr:'Den\'gi'},
+  {de:'Zeit',            ru:'Время',          tr:'Vremya'},
+  {de:'Tag',             ru:'День',           tr:'Den\''},
+  {de:'Nacht',           ru:'Ночь',           tr:'Noch\''},
+  {de:'Woche',           ru:'Неделя',         tr:'Nedelya'},
+  {de:'Monat',           ru:'Месяц',          tr:'Mesyats'},
+  {de:'Jahr',            ru:'Год',            tr:'God'},
+  {de:'Heute',           ru:'Сегодня',        tr:'Segodnya'},
+  {de:'Morgen',          ru:'Завтра',         tr:'Zavtra'},
+  {de:'Gestern',         ru:'Вчера',          tr:'Vchera'},
+  {de:'Groß',            ru:'Большой',        tr:'Bol\'shoy'},
+  {de:'Klein',           ru:'Маленький',      tr:'Malen\'kiy'},
+  {de:'Gut',             ru:'Хороший',        tr:'Khoroshiy'},
+  {de:'Schlecht',        ru:'Плохой',         tr:'Plokhoy'},
+  {de:'Neu',             ru:'Новый',          tr:'Novyy'},
+  {de:'Alt',             ru:'Старый',         tr:'Staryy'},
+  {de:'Schnell',         ru:'Быстрый',        tr:'Bystryy'},
+  {de:'Langsam',         ru:'Медленный',      tr:'Medlennyy'},
+  {de:'Schön',           ru:'Красивый',       tr:'Krasivyy'},
+  {de:'Heiß',            ru:'Горячий',        tr:'Goryachiy'},
+  {de:'Kalt',            ru:'Холодный',       tr:'Kholodnyy'},
+  {de:'Offen',           ru:'Открытый',       tr:'Otkrytyy'},
+  {de:'Geschlossen',     ru:'Закрытый',       tr:'Zakrytyy'},
+  {de:'Wo?',             ru:'Где?',           tr:'Gde?'},
+  {de:'Wann?',           ru:'Когда?',         tr:'Kogda?'},
+  {de:'Wie?',            ru:'Как?',           tr:'Kak?'},
+  {de:'Warum?',          ru:'Почему?',        tr:'Pochemu?'},
+  {de:'Was?',            ru:'Что?',           tr:'Chto?'},
+  {de:'Wer?',            ru:'Кто?',           tr:'Kto?'},
+  {de:'Wie viel?',       ru:'Сколько?',       tr:'Skol\'ko?'},
+  {de:'Hilfe!',          ru:'Помогите!',      tr:'Pomogite!'},
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let direction  = 'de';
+let activeMode = 'card';
+let progress   = {};
+let session = { queue:[], pos:0, modeSequence:[], correct:0, wrong:0, currentIdx:-1 };
+
+// ════════════════════════════════════════════════
+//  PERSISTENCE
+// ════════════════════════════════════════════════
+function saveProgress() {
+  localStorage.setItem('rv_progress', JSON.stringify(progress));
+}
+function loadProgress() {
+  const raw = localStorage.getItem('rv_progress');
+  if (raw) progress = JSON.parse(raw);
+  VOCAB.forEach((_,i) => { if (!progress[i]) progress[i] = {correct:0, total:0, mastered:false}; });
+  updateHomeStats();
+}
+function updateHomeStats() {
+  const mastered = Object.values(progress).filter(p=>p.mastered).length;
+  const learning  = Object.values(progress).filter(p=>!p.mastered && p.total>0).length;
+  document.getElementById('statMastered').textContent = mastered;
+  document.getElementById('statLearning').textContent = learning;
+  const pct = Math.round(mastered / VOCAB.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progText').textContent  = mastered + ' / ' + VOCAB.length;
+}
+
+// ════════════════════════════════════════════════
+//  UI CONTROLS
+// ════════════════════════════════════════════════
+function setDir(dir) {
+  direction = dir;
+  document.getElementById('dirDE').classList.toggle('active', dir==='de');
+  document.getElementById('dirRU').classList.toggle('active', dir==='ru');
+}
+function selectMode(mode) {
+  activeMode = mode;
+  ['card','mc','type','mix'].forEach(m => {
+    const id = 'mode' + m.charAt(0).toUpperCase() + m.slice(1);
+    document.getElementById(id).classList.toggle('selected', m===mode);
+  });
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() { loadProgress(); showScreen('screenHome'); }
+
+// ════════════════════════════════════════════════
+//  QUEUE  (spaced repetition light)
+// ════════════════════════════════════════════════
+function buildQueue() {
+  const scores = VOCAB.map((_,i) => {
+    const p = progress[i];
+    if (p.mastered)  return {i, score:0.05};
+    if (p.total===0) return {i, score:1};
+    return {i, score: 1 - p.correct/p.total + 0.1};
+  });
+  scores.sort((a,b)=>b.score-a.score);
+  return shuffle(scores.slice(0,20).map(s=>s.i)).slice(0,10);
+}
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ════════════════════════════════════════════════
+//  SESSION
+// ════════════════════════════════════════════════
+function startSession() {
+  session.queue   = buildQueue();
+  session.pos     = 0;
+  session.correct = 0;
+  session.wrong   = 0;
+  if (activeMode==='mix') {
+    const modes = ['card','mc','type'];
+    session.modeSequence = session.queue.map(()=>modes[Math.floor(Math.random()*3)]);
+  }
+  showNext();
+}
+function showNext() {
+  if (session.pos >= session.queue.length) { showEnd(); return; }
+  session.currentIdx = session.queue[session.pos];
+  const vocab = VOCAB[session.currentIdx];
+  const mode  = activeMode==='mix' ? session.modeSequence[session.pos] : activeMode;
+  if      (mode==='card') showFlashcard(vocab);
+  else if (mode==='mc')   showMC(vocab);
+  else                    showType(vocab);
+}
+function recordResult(correct) {
+  const p = progress[session.currentIdx];
+  p.total++;
+  if (correct) {
+    p.correct++; session.correct++;
+    if (p.correct>=3 && p.correct/p.total>=0.8) p.mastered=true;
+  } else { session.wrong++; }
+  saveProgress();
+}
+
+// ════════════════════════════════════════════════
+//  STEPS
+// ════════════════════════════════════════════════
+function renderSteps(id) {
+  const el=document.getElementById(id); el.innerHTML='';
+  session.queue.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='step'+(i<session.pos?' done':i===session.pos?' current':'');
+    el.appendChild(d);
+  });
+}
+function sessionInfo(id) {
+  const labels={card:'Karteikarten',mc:'Multiple Choice',type:'Tippen',mix:'Gemischt'};
+  document.getElementById(id).textContent=labels[activeMode]+' · '+(session.pos+1)+' / '+session.queue.length;
+}
+
+// ════════════════════════════════════════════════
+//  FLASHCARD
+// ════════════════════════════════════════════════
+let cardFlipped=false;
+function showFlashcard(vocab) {
+  cardFlipped=false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  document.getElementById('cardActions').style.display='none';
+  const isDE=direction==='de';
+  document.getElementById('cardFrontLabel').textContent = isDE ? 'Deutsch'  : 'Russisch';
+  document.getElementById('cardFrontWord').textContent  = isDE ? vocab.de   : vocab.ru;
+  document.getElementById('cardBackLabel').textContent  = isDE ? 'Russisch' : 'Deutsch';
+  document.getElementById('cardBackWord').textContent   = isDE ? vocab.ru   : vocab.de;
+  document.getElementById('cardTranslit').textContent   = isDE ? vocab.tr   : '';
+  renderSteps('stepsCard'); sessionInfo('sessionInfoCard');
+  showScreen('screenCard');
+}
+function flipCard() {
+  if(cardFlipped)return;
+  cardFlipped=true;
+  document.getElementById('cardInner').classList.add('flipped');
+  document.getElementById('cardActions').style.display='flex';
+}
+function flipCardBack() {
+  cardFlipped=false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  document.getElementById('cardActions').style.display='none';
+}
+function rateCard(knew) { recordResult(knew); session.pos++; showNext(); }
+
+// ════════════════════════════════════════════════
+//  MULTIPLE CHOICE
+// ════════════════════════════════════════════════
+function showMC(vocab) {
+  const isDE=direction==='de';
+  const correct=isDE ? vocab.ru : vocab.de;
+  document.getElementById('mcLabel').textContent = isDE ? 'Wie heißt auf Russisch …' : 'Was bedeutet auf Deutsch …';
+  document.getElementById('mcWord').textContent  = isDE ? vocab.de : vocab.ru;
+  document.getElementById('mcSub').textContent   = isDE ? '' : vocab.tr;
+
+  const distractors=shuffle(VOCAB.filter((_,i)=>i!==session.currentIdx)).slice(0,3).map(v=>isDE?v.ru:v.de);
+  const options=shuffle([correct,...distractors]);
+  const container=document.getElementById('mcOptions');
+  container.innerHTML='';
+  options.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='mc-opt'; btn.textContent=opt;
+    btn.onclick=()=>selectMC(btn,opt,correct);
+    container.appendChild(btn);
+  });
+  renderSteps('stepsMC'); sessionInfo('sessionInfoMC');
+  showScreen('screenMC');
+}
+function selectMC(btn,chosen,correct) {
+  document.querySelectorAll('.mc-opt').forEach(b=>{
+    b.classList.add('disabled');
+    if(b.textContent===correct) b.classList.add('correct');
+  });
+  const isCorrect=chosen===correct;
+  if(!isCorrect){btn.classList.remove('disabled');btn.classList.add('wrong');}
+  recordResult(isCorrect);
+  setTimeout(()=>{session.pos++;showNext();},900);
+}
+
+// ════════════════════════════════════════════════
+//  TYPE
+// ════════════════════════════════════════════════
+let typeChecked=false;
+function showType(vocab) {
+  typeChecked=false;
+  const isDE=direction==='de';
+  document.getElementById('typeLabel').textContent = isDE ? 'Wie heißt auf Russisch:' : 'Was bedeutet auf Deutsch:';
+  document.getElementById('typeWord').textContent  = isDE ? vocab.de : vocab.ru;
+  document.getElementById('typeSub').textContent   = isDE ? '' : vocab.tr;
+  const inp=document.getElementById('typeInput');
+  inp.value=''; inp.className='type-input'; inp.disabled=false;
+  inp.placeholder=isDE?'Russisch eingeben…':'Deutsch eingeben…';
+  inp.focus();
+  document.getElementById('typeFeedback').textContent='';
+  document.getElementById('typeFeedback').className='type-feedback';
+  document.getElementById('typeCheckBtn').textContent='Prüfen';
+  document.getElementById('typeCheckBtn').onclick=checkType;
+  renderSteps('stepsType'); sessionInfo('sessionInfoType');
+  showScreen('screenType');
+}
+function typeKeydown(e) {
+  if(e.key==='Enter'){if(!typeChecked)checkType();else{session.pos++;showNext();}}
+}
+function checkType() {
+  if(typeChecked)return;
+  const vocab=VOCAB[session.currentIdx]; const isDE=direction==='de';
+  const answer=document.getElementById('typeInput').value.trim();
+  const correct=isDE?vocab.ru:vocab.de;
+  const alts=isDE?[vocab.tr]:[];
+  const norm=s=>s.toLowerCase().replace(/[.,!?']/g,'').trim();
+  const isCorrect=norm(answer)===norm(correct)||alts.some(a=>norm(answer)===norm(a));
+  const inp=document.getElementById('typeInput');
+  const fb=document.getElementById('typeFeedback');
+  inp.disabled=true; inp.classList.add(isCorrect?'correct':'wrong');
+  fb.textContent=isCorrect?'✓ Richtig!':'✗ Richtige Antwort: '+correct;
+  fb.className='type-feedback '+(isCorrect?'correct':'wrong');
+  recordResult(isCorrect); typeChecked=true;
+  const btn=document.getElementById('typeCheckBtn');
+  btn.textContent='→ Weiter'; btn.onclick=()=>{session.pos++;showNext();};
+}
+
+// ════════════════════════════════════════════════
+//  SPEECH
+// ════════════════════════════════════════════════
+function speakCurrent() {
+  const vocab=VOCAB[session.currentIdx];
+  if(!vocab)return;
+  const u=new SpeechSynthesisUtterance(vocab.ru);
+  u.lang='ru-RU'; u.rate=0.85;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════
+//  SESSION END
+// ════════════════════════════════════════════════
+function showEnd() {
+  document.getElementById('endCorrect').textContent=session.correct;
+  document.getElementById('endWrong').textContent=session.wrong;
+  const total=session.correct+session.wrong;
+  const pct=total>0?Math.round(session.correct/total*100):0;
+  let msg='';
+  if(pct>=90) msg='Ausgezeichnet! Du hast fast alles richtig. 🔥';
+  else if(pct>=70) msg='Gut gemacht! Noch ein bisschen üben und du hast es drauf. 💪';
+  else if(pct>=50) msg='Solider Anfang! Die schwachen Wörter kommen öfter wieder. 🧠';
+  else msg='Nicht schlimm – Wiederholung ist der Schlüssel! 📚';
+  document.getElementById('endMsg').textContent=msg;
+  updateHomeStats(); showScreen('screenEnd');
+}
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+loadProgress();
+</script>
+</body>
+</html>
