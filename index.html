@@ -767,11 +767,9 @@ function buildQueue() {
   const scores = VOCAB.map((_,i) => {
     if (i === guaranteedCompliment) return null;
     const p = progress[i];
-    // Komplimente bekommen allgemein hohen Score → kommen öfter dran
-    const isCompliment = VOCAB[i].special === 'compliment';
-    if (p.mastered)  return {i, score: isCompliment ? 0.3  : 0.05};
-    if (p.total===0) return {i, score: isCompliment ? 1.5  : 1};
-    return {i, score: 1 - p.correct/p.total + (isCompliment ? 0.4 : 0.1)};
+    if (p.mastered)  return {i, score:0.05};
+    if (p.total===0) return {i, score:1};
+    return {i, score: 1 - p.correct/p.total + 0.1};
   }).filter(Boolean);
   scores.sort((a,b)=>b.score-a.score);
   const rest = shuffle(scores.slice(0,20).map(s=>s.i)).slice(0,9);
