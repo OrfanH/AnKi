@@ -258,12 +258,12 @@
   <div class="screen active" id="screenHome">
     <div class="home-hero">
       <h1>Russisch<br><em>lernen.</em></h1>
-      <p>100 Anfängervokabeln · 4 Lernmodi</p>
+      <p>260 Vokabeln · 4 Lernmodi</p>
 
       <div class="stat-row">
         <div class="stat"><span class="stat-num" id="statMastered">0</span><span class="stat-label">Beherrscht</span></div>
         <div class="stat"><span class="stat-num" id="statLearning">0</span><span class="stat-label">In Übung</span></div>
-        <div class="stat"><span class="stat-num">100</span><span class="stat-label">Gesamt</span></div>
+        <div class="stat"><span class="stat-num">260</span><span class="stat-label">Gesamt</span></div>
       </div>
 
       <p class="section-label">Lernrichtung</p>
@@ -365,6 +365,7 @@
       <span class="card-label" id="typeLabel">Wie heißt …?</span>
       <div class="type-word" id="typeWord">—</div>
       <div class="mc-sub" id="typeSub"></div>
+      <button class="speak-btn" id="typeSpeakBtn" onclick="speakCurrent()" style="display:none">🔊 Anhören</button>
       <input class="type-input" id="typeInput"
         placeholder="Antwort eingeben…"
         onkeydown="typeKeydown(event)"
@@ -502,6 +503,196 @@ const VOCAB = [
   {de:'Wer?',            ru:'Кто?',           tr:'Kto?'},
   {de:'Wie viel?',       ru:'Сколько?',       tr:'Skol\'ko?'},
   {de:'Hilfe!',          ru:'Помогите!',      tr:'Pomogite!'},
+
+  // Körper
+  {de:'Kopf',            ru:'Голова',         tr:'Golova'},
+  {de:'Gesicht',         ru:'Лицо',           tr:'Litso'},
+  {de:'Auge',            ru:'Глаз',           tr:'Glaz'},
+  {de:'Ohr',             ru:'Ухо',            tr:'Ukho'},
+  {de:'Nase',            ru:'Нос',            tr:'Nos'},
+  {de:'Mund',            ru:'Рот',            tr:'Rot'},
+  {de:'Hand',            ru:'Рука',           tr:'Ruka'},
+  {de:'Bein',            ru:'Нога',           tr:'Noga'},
+  {de:'Herz',            ru:'Сердце',         tr:'Serdtse'},
+  {de:'Rücken',          ru:'Спина',          tr:'Spina'},
+
+  // Farben
+  {de:'Rot',             ru:'Красный',        tr:'Krasnyy'},
+  {de:'Blau',            ru:'Синий',          tr:'Siniy'},
+  {de:'Grün',            ru:'Зелёный',        tr:'Zelyonyy'},
+  {de:'Gelb',            ru:'Жёлтый',         tr:'Zholtyy'},
+  {de:'Schwarz',         ru:'Чёрный',         tr:'Chornyy'},
+  {de:'Weiß',            ru:'Белый',          tr:'Belyy'},
+  {de:'Grau',            ru:'Серый',          tr:'Seryy'},
+  {de:'Orange',          ru:'Оранжевый',      tr:'Oranzhevyy'},
+  {de:'Lila',            ru:'Фиолетовый',     tr:'Fioletovyy'},
+  {de:'Rosa',            ru:'Розовый',        tr:'Rozovyy'},
+
+  // Zahlen
+  {de:'Eins',            ru:'Один',           tr:'Odin'},
+  {de:'Zwei',            ru:'Два',            tr:'Dva'},
+  {de:'Drei',            ru:'Три',            tr:'Tri'},
+  {de:'Vier',            ru:'Четыре',         tr:'Chetyre'},
+  {de:'Fünf',            ru:'Пять',           tr:'Pyat\''},
+  {de:'Sechs',           ru:'Шесть',          tr:'Shest\''},
+  {de:'Sieben',          ru:'Семь',           tr:'Sem\''},
+  {de:'Acht',            ru:'Восемь',         tr:'Vosem\''},
+  {de:'Neun',            ru:'Девять',         tr:'Devyat\''},
+  {de:'Zehn',            ru:'Десять',         tr:'Desyat\''},
+  {de:'Hundert',         ru:'Сто',            tr:'Sto'},
+  {de:'Tausend',         ru:'Тысяча',         tr:'Tysyacha'},
+
+  // Natur & Wetter
+  {de:'Sonne',           ru:'Солнце',         tr:'Solntse'},
+  {de:'Mond',            ru:'Луна',           tr:'Luna'},
+  {de:'Stern',           ru:'Звезда',         tr:'Zvezda'},
+  {de:'Himmel',          ru:'Небо',           tr:'Nebo'},
+  {de:'Regen',           ru:'Дождь',          tr:'Dozhd\''},
+  {de:'Schnee',          ru:'Снег',           tr:'Sneg'},
+  {de:'Wind',            ru:'Ветер',          tr:'Veter'},
+  {de:'Wetter',          ru:'Погода',         tr:'Pogoda'},
+  {de:'Meer',            ru:'Море',           tr:'More'},
+  {de:'Fluss',           ru:'Река',           tr:'Reka'},
+  {de:'Berg',            ru:'Гора',           tr:'Gora'},
+  {de:'Wald',            ru:'Лес',            tr:'Les'},
+  {de:'Blume',           ru:'Цветок',         tr:'Tsvetok'},
+  {de:'Baum',            ru:'Дерево',         tr:'Derevo'},
+
+  // Tiere
+  {de:'Hund',            ru:'Собака',         tr:'Sobaka'},
+  {de:'Katze',           ru:'Кошка',          tr:'Koshka'},
+  {de:'Vogel',           ru:'Птица',          tr:'Ptitsa'},
+  {de:'Fisch',           ru:'Рыба',           tr:'Ryba'},
+  {de:'Pferd',           ru:'Лошадь',         tr:'Loshad\''},
+  {de:'Kuh',             ru:'Корова',         tr:'Korova'},
+  {de:'Maus',            ru:'Мышь',           tr:'Mysh\''},
+
+  // Essen & Trinken
+  {de:'Kaffee',          ru:'Кофе',           tr:'Kofe'},
+  {de:'Tee',             ru:'Чай',            tr:'Chay'},
+  {de:'Saft',            ru:'Сок',            tr:'Sok'},
+  {de:'Suppe',           ru:'Суп',            tr:'Sup'},
+  {de:'Reis',            ru:'Рис',            tr:'Ris'},
+  {de:'Ei',              ru:'Яйцо',           tr:'Yaytso'},
+  {de:'Käse',            ru:'Сыр',            tr:'Syr'},
+  {de:'Butter',          ru:'Масло',          tr:'Maslo'},
+  {de:'Zucker',          ru:'Сахар',          tr:'Sakhar'},
+  {de:'Salz',            ru:'Соль',           tr:'Sol\''},
+  {de:'Apfel',           ru:'Яблоко',         tr:'Yabloko'},
+  {de:'Banane',          ru:'Банан',          tr:'Banan'},
+  {de:'Kartoffel',       ru:'Картофель',      tr:'Kartofel\''},
+
+  // Wohnen & Alltag
+  {de:'Tisch',           ru:'Стол',           tr:'Stol'},
+  {de:'Stuhl',           ru:'Стул',           tr:'Stul'},
+  {de:'Bett',            ru:'Кровать',        tr:'Krovat\''},
+  {de:'Fenster',         ru:'Окно',           tr:'Okno'},
+  {de:'Tür',             ru:'Дверь',          tr:'Dver\''},
+  {de:'Treppe',          ru:'Лестница',       tr:'Lestnitsa'},
+  {de:'Schlüssel',       ru:'Ключ',           tr:'Klyuch'},
+  {de:'Telefon',         ru:'Телефон',        tr:'Telefon'},
+  {de:'Computer',        ru:'Компьютер',      tr:'Kompyuter'},
+  {de:'Uhr',             ru:'Часы',           tr:'Chasy'},
+  {de:'Lampe',           ru:'Лампа',          tr:'Lampa'},
+  {de:'Spiegel',         ru:'Зеркало',        tr:'Zerkalo'},
+  {de:'Bad / Badezimmer',ru:'Ванная',         tr:'Vannaya'},
+
+  // Kleidung
+  {de:'Hemd',            ru:'Рубашка',        tr:'Rubashka'},
+  {de:'Hose',            ru:'Брюки',          tr:'Bryuki'},
+  {de:'Jacke',           ru:'Куртка',         tr:'Kurtka'},
+  {de:'Schuhe',          ru:'Туфли',          tr:'Tufli'},
+  {de:'Kleid',           ru:'Платье',         tr:'Plat\'ye'},
+  {de:'Mantel',          ru:'Пальто',         tr:'Pal\'to'},
+  {de:'Mütze',           ru:'Шапка',          tr:'Shapka'},
+
+  // Verben (weitere)
+  {de:'Spielen',         ru:'Играть',         tr:'Igrat\''},
+  {de:'Lernen',          ru:'Учить',          tr:'Uchit\''},
+  {de:'Helfen',          ru:'Помогать',       tr:'Pomogat\''},
+  {de:'Öffnen',          ru:'Открывать',      tr:'Otkryvat\''},
+  {de:'Schließen',       ru:'Закрывать',      tr:'Zakryvat\''},
+  {de:'Suchen',          ru:'Искать',         tr:'Iskat\''},
+  {de:'Finden',          ru:'Находить',       tr:'Nakhodit\''},
+  {de:'Nehmen',          ru:'Брать',          tr:'Brat\''},
+  {de:'Geben',           ru:'Давать',         tr:'Davat\''},
+  {de:'Laufen',          ru:'Бежать',         tr:'Bezhat\''},
+  {de:'Sprechen',        ru:'Разговаривать',  tr:'Razgovari­vat\''},
+  {de:'Denken',          ru:'Думать',         tr:'Dumat\''},
+  {de:'Warten',          ru:'Ждать',          tr:'Zhdat\''},
+  {de:'Beginnen',        ru:'Начинать',       tr:'Nachinat\''},
+  {de:'Enden',           ru:'Заканчивать',    tr:'Zakanchivat\''},
+  {de:'Bezahlen',        ru:'Платить',        tr:'Platit\''},
+  {de:'Tanzen',          ru:'Танцевать',      tr:'Tantsevat\''},
+  {de:'Singen',          ru:'Петь',           tr:'Pet\''},
+  {de:'Kochen',          ru:'Готовить',       tr:'Gotovit\''},
+  {de:'Waschen',         ru:'Мыть',           tr:'Myt\''},
+
+  // Adjektive (weitere)
+  {de:'Teuer',           ru:'Дорогой',        tr:'Dorogoy'},
+  {de:'Billig',          ru:'Дешёвый',        tr:'Deshovyy'},
+  {de:'Leicht',          ru:'Лёгкий',         tr:'Lyogkiy'},
+  {de:'Schwer',          ru:'Тяжёлый',        tr:'Tyazholyy'},
+  {de:'Laut',            ru:'Громкий',        tr:'Gromkiy'},
+  {de:'Leise',           ru:'Тихий',          tr:'Tikhiy'},
+  {de:'Richtig',         ru:'Правильный',     tr:'Pravil\'nyy'},
+  {de:'Falsch',          ru:'Неправильный',   tr:'Nepravil\'nyy'},
+  {de:'Müde',            ru:'Усталый',        tr:'Ustalyy'},
+  {de:'Hungrig',         ru:'Голодный',       tr:'Golodnyy'},
+  {de:'Glücklich',       ru:'Счастливый',     tr:'Schastlivyy'},
+  {de:'Traurig',         ru:'Грустный',       tr:'Grustnyy'},
+  {de:'Krank',           ru:'Больной',        tr:'Bol\'noy'},
+  {de:'Gesund',          ru:'Здоровый',       tr:'Zdorovyy'},
+
+  // Orte & Gebäude
+  {de:'Krankenhaus',     ru:'Больница',       tr:'Bol\'nitsa'},
+  {de:'Apotheke',        ru:'Аптека',         tr:'Apteka'},
+  {de:'Supermarkt',      ru:'Супермаркет',    tr:'Supermarket'},
+  {de:'Restaurant',      ru:'Ресторан',       tr:'Restoran'},
+  {de:'Café',            ru:'Кафе',           tr:'Kafe'},
+  {de:'Hotel',           ru:'Гостиница',      tr:'Gostinitsa'},
+  {de:'Bahnhof',         ru:'Вокзал',         tr:'Vokzal'},
+  {de:'Flughafen',       ru:'Аэропорт',       tr:'Aeroport'},
+  {de:'Bank',            ru:'Банк',           tr:'Bank'},
+  {de:'Post',            ru:'Почта',          tr:'Pochta'},
+  {de:'Park',            ru:'Парк',           tr:'Park'},
+  {de:'Kirche',          ru:'Церковь',        tr:'Tserkov\''},
+  {de:'Museum',          ru:'Музей',          tr:'Muzey'},
+  {de:'Bibliothek',      ru:'Библиотека',     tr:'Biblioteka'},
+
+  // Familie (weitere)
+  {de:'Großvater',       ru:'Дедушка',        tr:'Dedushka'},
+  {de:'Großmutter',      ru:'Бабушка',        tr:'Babushka'},
+  {de:'Sohn',            ru:'Сын',            tr:'Syn'},
+  {de:'Tochter',         ru:'Дочь',           tr:'Doch\''},
+  {de:'Ehemann',         ru:'Муж',            tr:'Muzh'},
+  {de:'Ehefrau',         ru:'Жена',           tr:'Zhena'},
+  {de:'Baby',            ru:'Младенец',       tr:'Mladenets'},
+
+  // Nützliche Ausdrücke
+  {de:'Ich verstehe',    ru:'Я понимаю',      tr:'Ya ponimayu'},
+  {de:'Ich weiß nicht',  ru:'Я не знаю',      tr:'Ya ne znayu'},
+  {de:'Wie bitte?',      ru:'Что?',           tr:'Chto?'},
+  {de:'Sprechen Sie Deutsch?', ru:'Вы говорите по-немецки?', tr:'Vy govorite po-nemetski?'},
+  {de:'Wo ist …?',       ru:'Где находится …?', tr:'Gde nakhoditsya …?'},
+  {de:'Wie viel kostet?', ru:'Сколько стоит?', tr:'Skol\'ko stoit?'},
+  {de:'Ich möchte …',    ru:'Я хочу …',       tr:'Ya khochu …'},
+  {de:'Ich heiße …',     ru:'Меня зовут …',   tr:'Menya zovut …'},
+  {de:'Freut mich',      ru:'Приятно познакомиться', tr:'Priyatno poznakomit\'sya'},
+  {de:'Gute Reise!',     ru:'Счастливого пути!', tr:'Schastlivogo puti!'},
+  {de:'Entschuldigung, wo ist …?', ru:'Извините, где …?', tr:'Izvinite, gde …?'},
+
+  // 💛 Komplimente
+  {de:'Du bist schön',             ru:'Ты красивая',              tr:'Ty krasivaya',            special:'compliment'},
+  {de:'Du hast wunderschöne Augen',ru:'У тебя красивые глаза',    tr:'U tebya krasivyye glaza', special:'compliment'},
+  {de:'Du lächelst wunderschön',   ru:'У тебя красивая улыбка',   tr:'U tebya krasivaya ulybka',special:'compliment'},
+  {de:'Ich denke an dich',         ru:'Я думаю о тебе',           tr:'Ya dumayu o tebe',        special:'compliment'},
+  {de:'Ich vermisse dich',         ru:'Я скучаю по тебе',         tr:'Ya skuchayu po tebe',     special:'compliment'},
+  {de:'Ich mag dich',              ru:'Ты мне нравишься',         tr:'Ty mne nravishsya',       special:'compliment'},
+  {de:'Ich liebe dich',            ru:'Я тебя люблю',             tr:'Ya tebya lyublyu',        special:'compliment'},
+  {de:'Du bist mein Herz',         ru:'Ты моё сердце',            tr:'Ty moyo serdtse',         special:'compliment'},
+  {de:'Du machst mich glücklich',  ru:'Ты делаешь меня счастливым',tr:'Ty delayesh menya schastlivym', special:'compliment'},
+  {de:'Ich will bei dir sein',     ru:'Я хочу быть рядом с тобой',tr:'Ya khochu byt\' ryadom s toboy', special:'compliment'},
 ];
 
 // ════════════════════════════════════════════════
@@ -559,14 +750,34 @@ function goHome() { loadProgress(); showScreen('screenHome'); }
 //  QUEUE  (spaced repetition light)
 // ════════════════════════════════════════════════
 function buildQueue() {
-  const scores = VOCAB.map((_,i) => {
+  // Kompliment-Indizes sammeln
+  const complimentIdxs = VOCAB.map((v,i)=>v.special==='compliment'?i:-1).filter(i=>i>=0);
+
+  // Ein Kompliment für den Sessionstart wählen (schwächstes bevorzugen)
+  const complimentScores = complimentIdxs.map(i => {
     const p = progress[i];
     if (p.mastered)  return {i, score:0.05};
     if (p.total===0) return {i, score:1};
     return {i, score: 1 - p.correct/p.total + 0.1};
   });
+  complimentScores.sort((a,b)=>b.score-a.score);
+  const guaranteedCompliment = complimentScores[0].i;
+
+  // Restliche Queue aus allen Vokabeln (ohne das gewählte Kompliment)
+  const scores = VOCAB.map((_,i) => {
+    if (i === guaranteedCompliment) return null;
+    const p = progress[i];
+    // Komplimente bekommen allgemein hohen Score → kommen öfter dran
+    const isCompliment = VOCAB[i].special === 'compliment';
+    if (p.mastered)  return {i, score: isCompliment ? 0.3  : 0.05};
+    if (p.total===0) return {i, score: isCompliment ? 1.5  : 1};
+    return {i, score: 1 - p.correct/p.total + (isCompliment ? 0.4 : 0.1)};
+  }).filter(Boolean);
   scores.sort((a,b)=>b.score-a.score);
-  return shuffle(scores.slice(0,20).map(s=>s.i)).slice(0,10);
+  const rest = shuffle(scores.slice(0,20).map(s=>s.i)).slice(0,9);
+
+  // Kompliment immer an erster Stelle
+  return [guaranteedCompliment, ...rest];
 }
 function shuffle(arr) {
   const a=[...arr];
@@ -639,6 +850,7 @@ function showFlashcard(vocab) {
   document.getElementById('cardTranslit').textContent   = isDE ? vocab.tr   : '';
   renderSteps('stepsCard'); sessionInfo('sessionInfoCard');
   showScreen('screenCard');
+  autoSpeak();
 }
 function flipCard() {
   if(cardFlipped)return;
@@ -675,6 +887,7 @@ function showMC(vocab) {
   });
   renderSteps('stepsMC'); sessionInfo('sessionInfoMC');
   showScreen('screenMC');
+  autoSpeak();
 }
 function selectMC(btn,chosen,correct) {
   document.querySelectorAll('.mc-opt').forEach(b=>{
@@ -705,8 +918,11 @@ function showType(vocab) {
   document.getElementById('typeFeedback').className='type-feedback';
   document.getElementById('typeCheckBtn').textContent='Prüfen';
   document.getElementById('typeCheckBtn').onclick=checkType;
+  // Zeige Anhören-Button immer; beim RU-Wort in der Aufgabe sowieso sinnvoll
+  document.getElementById('typeSpeakBtn').style.display='inline-flex';
   renderSteps('stepsType'); sessionInfo('sessionInfoType');
   showScreen('screenType');
+  autoSpeak();
 }
 function typeKeydown(e) {
   if(e.key==='Enter'){if(!typeChecked)checkType();else{session.pos++;showNext();}}
@@ -738,6 +954,10 @@ function speakCurrent() {
   const u=new SpeechSynthesisUtterance(vocab.ru);
   u.lang='ru-RU'; u.rate=0.85;
   speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+function autoSpeak() {
+  // Small delay so the screen transition finishes first
+  setTimeout(speakCurrent, 300);
 }
 
 // ════════════════════════════════════════════════
