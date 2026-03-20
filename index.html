@@ -12,7 +12,2016 @@
     --surface2: #1e1e24;
     --border: #2a2a35;
     --accent: #e8c547;
-    --accent2: #7c6fff;
+    --accent2: #7c6fff;<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Русский – Vokabeln lernen</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">Рус<span>ский</span></div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <span id="progText">0 / 100</span>
+  </div>
+</header>
+
+<nav class="main-nav" id="mainNav">
+  <button class="nav-tab active" id="navVocab"    onclick="switchArea('vocab')">📖 Vokabeln</button>
+  <button class="nav-tab"        id="navGrammar"  onclick="switchArea('grammar')">📐 Grammatik</button>
+</nav>
+
+<main>
+
+  <!-- ══ GENUS ÜBUNG ══ -->
+  <div class="screen" id="screenGenusExercise">
+    <div class="g-exercise-header">
+      <div class="g-level-badge level1">Genus · Multiple Choice</div>
+      <div class="g-verb-inf" id="genusWord">дом</div>
+      <div class="g-verb-de"  id="genusWordDe">Haus</div>
+    </div>
+
+    <div class="mc-options" id="genusMcOptions" style="grid-template-columns:1fr 1fr 1fr"></div>
+
+    <div class="notice" id="genusHint" style="display:none">
+      <strong>Warum?</strong> <span id="genusHintText"></span>
+    </div>
+
+    <div class="g-progress-row">
+      <span id="genusProgText">0 / 0</span>
+      <div class="g-progress-bar"><div class="g-progress-fill" id="genusProgFill" style="width:0%"></div></div>
+      <span id="genusScoreText">0 ✓</span>
+    </div>
+
+    <button class="btn btn-ghost" onclick="showGrammarIntroBack()">← Zurück</button>
+  </div>
+
+  <!-- ══ KONJUGATION ÜBUNG ══ -->
+  <div class="screen" id="screenConjExercise">
+    <div class="g-exercise-header">
+      <div class="g-level-badge level1" id="conjLevelBadge">Stufe 1 · Multiple Choice</div>
+      <div class="g-verb-inf" id="conjVerbInf">говорить</div>
+      <div class="g-verb-de"  id="conjVerbDe">sprechen</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div class="g-person"    id="conjPerson">мы</div>
+        <div class="g-person-de" id="conjPersonDe">wir</div>
+      </div>
+    </div>
+
+    <div class="g-level-switcher">
+      <button class="g-level-btn active" id="conjBtnL1" onclick="setConjLevel(1)">Stufe 1 · Multiple Choice</button>
+      <button class="g-level-btn"        id="conjBtnL2" onclick="setConjLevel(2)">Stufe 2 · Tippen</button>
+    </div>
+
+    <!-- Stufe 1: MC -->
+    <div id="conjMcArea">
+      <div class="mc-options" id="conjMcOptions" style="grid-template-columns:1fr 1fr"></div>
+    </div>
+
+    <!-- Stufe 2: Tippen -->
+    <div id="conjTypeArea" style="display:none">
+      <div class="type-box" style="padding:20px;gap:12px">
+        <input class="type-input" id="conjTypeInput"
+          placeholder="Konjugierte Form eingeben…"
+          onkeydown="conjTypeKeydown(event)"
+          autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="type-feedback" id="conjTypeFeedback"></div>
+        <button class="btn btn-secondary" id="conjTypeCheckBtn" onclick="checkConjType()" style="max-width:180px">Prüfen</button>
+      </div>
+    </div>
+
+    <div class="g-progress-row">
+      <span id="conjProgText">0 / 0</span>
+      <div class="g-progress-bar"><div class="g-progress-fill" id="conjProgFill" style="width:0%"></div></div>
+      <span id="conjScoreText">0 ✓</span>
+    </div>
+
+    <button class="btn btn-ghost" onclick="showGrammarIntroBack()">← Zurück</button>
+  </div>
+
+  <!-- ══ GRAMMAR INTRO ══ -->
+  <div class="screen" id="screenGrammarIntro">
+    <div class="grammar-intro-hero">
+      <div class="grammar-intro-title">
+        <span id="gIntroIcon"></span>
+        <span id="gIntroTitle"></span>
+      </div>
+      <p class="grammar-intro-rule" id="gIntroRule"></p>
+    </div>
+    <div class="grammar-table-wrap">
+      <div class="grammar-table-title" id="gTableTitle">Beispiele</div>
+      <div id="gTableRows"></div>
+    </div>
+    <button class="btn btn-primary" onclick="startGrammarExercise()">▶ Jetzt üben</button>
+    <button class="btn btn-ghost"   onclick="showGrammar()">← Zurück</button>
+  </div>
+
+  <!-- ══ GRAMMAR OVERVIEW ══ -->
+  <div class="screen" id="screenGrammar">
+    <div class="grammar-hero">
+      <h2>Grammatik<br><em>lernen.</em></h2>
+      <p>Russische Grammatik Schritt für Schritt — erklärt und direkt geübt.</p>
+    </div>
+    <div class="grammar-grid" id="grammarGrid"></div>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="screen active" id="screenHome">
+    <div class="home-hero">
+      <h1>Russisch<br><em>lernen.</em></h1>
+      <p>~230 Vokabeln · 15 Kategorien · 4 Modi</p>
+
+      <div class="stat-row">
+        <div class="stat"><span class="stat-num" id="statMastered">0</span><span class="stat-label">Beherrscht</span></div>
+        <div class="stat"><span class="stat-num" id="statLearning">0</span><span class="stat-label">In Übung</span></div>
+        <div class="stat"><span class="stat-num" id="statTotal">0</span><span class="stat-label">Gesamt</span></div>
+      </div>
+
+      <p class="section-label">Kategorie</p>
+      <div class="cat-picker" id="catPicker"></div>
+
+      <p class="section-label">Lernrichtung</p>
+      <div class="dir-picker">
+        <button class="dir-btn active" id="dirDE" onclick="setDir('de')">DE → RU</button>
+        <button class="dir-btn" id="dirRU" onclick="setDir('ru')">RU → DE</button>
+      </div>
+
+      <p class="section-label">Modus wählen</p>
+      <div class="mode-grid">
+        <button class="mode-card selected" id="modeCard" onclick="selectMode('card')">
+          <span class="mode-card-icon">🃏</span>
+          <span class="mode-card-name">Karteikarte</span>
+          <span class="mode-card-desc">Wort kennenlernen, umdrehen, selbst bewerten</span>
+        </button>
+        <button class="mode-card" id="modeMc" onclick="selectMode('mc')">
+          <span class="mode-card-icon">🔤</span>
+          <span class="mode-card-name">Multiple Choice</span>
+          <span class="mode-card-desc">4 Optionen + Audio, ideal zum Einstieg</span>
+        </button>
+        <button class="mode-card" id="modeType" onclick="selectMode('type')">
+          <span class="mode-card-icon">⌨️</span>
+          <span class="mode-card-name">Tippen</span>
+          <span class="mode-card-desc">Aktives Abrufen, wenn Wörter schon sitzen</span>
+        </button>
+        <button class="mode-card" id="modeFill" onclick="selectMode('fill')">
+          <span class="mode-card-icon">✏️</span>
+          <span class="mode-card-name">Lückentext</span>
+          <span class="mode-card-desc">Ergänze das russische Wort im deutschen Satz</span>
+        </button>
+        <button class="mode-card" id="modeMix" onclick="selectMode('mix')">
+          <span class="mode-card-icon">🔀</span>
+          <span class="mode-card-name">Gemischt</span>
+          <span class="mode-card-desc">Zufällige Mischung aller vier Modi</span>
+        </button>
+        <button class="mode-card mode-card-weak" id="modeWeak" onclick="selectMode('weak')">
+          <span class="mode-card-icon">🎯</span>
+          <span class="mode-card-name">Schwächste Wörter</span>
+          <span class="mode-card-desc">Nur Wörter mit ≥ 5 Fehlern, schlechteste zuerst</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="tryStartSession()">▶ Session starten</button>
+
+    <div class="notice">
+      <strong>Supabase nicht verbunden</strong><br>
+      Fortschritt wird lokal gespeichert. Trage Supabase URL + Key im Code ein für geräteübergreifende Synchronisation.
+    </div>
+  </div>
+
+  <!-- ══ FLASHCARD ══ -->
+  <div class="screen" id="screenCard">
+    <div class="mode-badge"><span class="dot"></span> Karteikarte</div>
+    <div class="steps" id="stepsCard"></div>
+    <div class="session-info" id="sessionInfoCard"></div>
+
+    <div class="card-scene">
+      <div class="card-inner" id="cardInner">
+        <div class="card-face card-front" onclick="flipCard()">
+          <span class="card-label" id="cardFrontLabel">Deutsch</span>
+          <div class="card-word" id="cardFrontWord">—</div>
+          <div class="card-hint">Tippe zum Umdrehen ↩</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-label" id="cardBackLabel">Russisch</span>
+          <div class="card-word" id="cardBackWord">—</div>
+          <div class="card-transliteration" id="cardTranslit"></div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="speak-btn" onclick="speakCurrent()">🔊 Anhören</button>
+            <button class="flip-back-btn" onclick="flipCardBack()">↩ Zurück</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions" id="cardActions" style="display:none">
+      <button class="btn btn-danger"  onclick="rateCard(false)">✗ Neu für mich</button>
+      <button class="btn btn-success" onclick="rateCard(true)">✓ Kannte ich</button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ MULTIPLE CHOICE ══ -->
+  <div class="screen" id="screenMC">
+    <div class="mode-badge"><span class="dot" style="background:var(--accent2)"></span> Multiple Choice</div>
+    <div class="steps" id="stepsMC"></div>
+    <div class="session-info" id="sessionInfoMC"></div>
+
+    <div class="mc-question">
+      <button class="mc-speak-btn" onclick="speakCurrent()">🔊 Anhören</button>
+      <span class="card-label" id="mcLabel">Was bedeutet …?</span>
+      <div class="mc-word" id="mcWord">—</div>
+      <div class="mc-sub" id="mcSub"></div>
+    </div>
+
+    <div class="mc-options" id="mcOptions"></div>
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ TYPE ══ -->
+  <div class="screen" id="screenType">
+    <div class="mode-badge"><span class="dot" style="background:var(--success)"></span> Tippen</div>
+    <div class="steps" id="stepsType"></div>
+    <div class="session-info" id="sessionInfoType"></div>
+
+    <div class="type-box">
+      <span class="card-label" id="typeLabel">Wie heißt …?</span>
+      <div class="type-word" id="typeWord">—</div>
+      <div class="mc-sub" id="typeSub"></div>
+      <input class="type-input" id="typeInput"
+        placeholder="Antwort eingeben…"
+        onkeydown="typeKeydown(event)"
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="type-feedback" id="typeFeedback"></div>
+      <button class="btn btn-secondary" id="typeCheckBtn" onclick="checkType()" style="max-width:200px">Prüfen</button>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ INTRO ══ -->
+  <div class="screen" id="screenIntro">
+    <div class="intro-hero">
+      <div class="intro-cat-icon" id="introCatIcon">📚</div>
+      <div class="intro-cat-name" id="introCatName"></div>
+      <span class="intro-count" id="introCount"></span>
+      <p class="intro-cat-desc" id="introCatDesc"></p>
+    </div>
+    <div class="intro-word-list">
+      <div class="intro-list-header">
+        <span>Kyrillisch</span><span>Umschrift</span><span>Deutsch</span><span></span>
+      </div>
+      <div id="introWordList"></div>
+    </div>
+    <button class="btn btn-primary" onclick="startSession()">▶ Jetzt üben</button>
+    <button class="btn btn-ghost" onclick="goHome()">← Zurück</button>
+  </div>
+
+  <!-- ══ FILL ══ -->
+  <div class="screen" id="screenFill">
+    <div class="mode-badge"><span class="dot" style="background:var(--accent)"></span> Lückentext</div>
+    <div class="steps" id="stepsFill"></div>
+    <div class="session-info" id="sessionInfoFill"></div>
+
+    <div class="fill-box">
+      <span class="card-label">Ergänze das russische Wort:</span>
+      <div class="fill-sentence" id="fillSentence"></div>
+      <input class="type-input" id="fillInput"
+        placeholder="Russisch eingeben…"
+        onkeydown="fillKeydown(event)"
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="type-feedback" id="fillFeedback"></div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-secondary" id="fillCheckBtn" onclick="checkFill()" style="max-width:160px">Prüfen</button>
+        <button class="speak-btn" id="fillSpeakBtn" style="display:none" onclick="speakCurrent()">🔊 Anhören</button>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" onclick="goHome()">← Abbrechen</button>
+  </div>
+
+  <!-- ══ SESSION END ══ -->
+  <div class="screen" id="screenEnd">
+    <div class="session-end">
+      <div style="font-size:2.5rem">🎉</div>
+      <h2>Session <em>abgeschlossen!</em></h2>
+      <div class="end-stats">
+        <div class="stat"><span class="end-stat-num green" id="endCorrect">0</span><span class="end-stat-label">Richtig</span></div>
+        <div class="stat"><span class="end-stat-num red"   id="endWrong">0</span><span class="end-stat-label">Falsch</span></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);line-height:1.6" id="endMsg"></p>
+      <button class="btn btn-primary" onclick="startSession()">↺ Neue Session</button>
+      <button class="btn btn-ghost"   onclick="goHome()">← Zurück</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ════════════════════════════════════════════════
+//  SUPABASE CONFIG  (hier eintragen wenn bereit)
+// ════════════════════════════════════════════════
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';
+
+// ════════════════════════════════════════════════
+//  KATEGORIEN
+// ════════════════════════════════════════════════
+const CATEGORIES = [
+  { key:'all',       name:'Alle Kategorien', icon:'📚',
+    desc:'Alle verfügbaren Vokabeln gemischt. Ideal für eine abwechslungsreiche Übung quer durch alle Themen.' },
+  { key:'greet',     name:'Begrüßungen',     icon:'👋',
+    desc:'Die wichtigsten Begrüßungsformeln und Höflichkeitsfloskeln. Beachte das Unterschied zwischen formell (Вы) und informell (ты) – im Russischen macht das einen großen Unterschied.' },
+  { key:'pronoun',   name:'Pronomen',        icon:'🧑',
+    desc:'Grundlegende Personalpronomen. Im Russischen bestimmen sie die Verbendungen mit – dieses Fundament zahlt sich früh aus.' },
+  { key:'verb',      name:'Grundverben',     icon:'⚡',
+    desc:'Die häufigsten russischen Verben in der Grundform (Infinitiv). Viele Verben haben eine unvollendete und eine vollendete Form – hier lernst du zunächst die unvollendete Variante.' },
+  { key:'family',    name:'Familie',         icon:'👨‍👩‍👧',
+    desc:'Familienmitglieder und nahestehende Personen. Im Russischen gibt es für viele Verwandtschaftsgrade eigene Wörter, die im Deutschen keine direkte Entsprechung haben (z.B. Дедушка = Opa).' },
+  { key:'home',      name:'Zuhause',         icon:'🏠',
+    desc:'Wörter rund ums Wohnen und die Einrichtung. Russische Wohnungen (Квартира) liegen oft in großen Plattenbau-Blöcken – diese Vokabeln helfen dir, über deinen Alltag zu sprechen.' },
+  { key:'food',      name:'Essen & Trinken', icon:'🍽️',
+    desc:'Lebensmittel und Getränke. Brot (хлеб) und Tee (чай) spielen in der russischen Kultur eine besonders wichtige Rolle. Viele Lebensmittelwörter klingen ähnlich wie im Deutschen.' },
+  { key:'transport', name:'Verkehr',         icon:'🚆',
+    desc:'Verkehrsmittel und Transport. Russland hat ein riesiges Eisenbahnnetz – der Zug (поезд) ist das beliebteste Fernverkehrsmittel. Die Moskauer Metro (метро) ist für ihre prächtige Architektur berühmt.' },
+  { key:'time',      name:'Zeit & Kalender', icon:'🕐',
+    desc:'Zeitangaben, Tageszeiten und Datumsangaben. Viele Zeitausdrücke im Russischen sind kurz und prägnant – "сейчас" (jetzt) und "уже" (schon) tauchen in fast jedem Gespräch auf.' },
+  { key:'adjective', name:'Adjektive',       icon:'🎨',
+    desc:'Häufige Eigenschaftswörter in der männlichen Grundform (Nominativ Maskulinum). Im echten Satz passen sich Adjektive in Genus, Kasus und Numerus an das Nomen an.' },
+  { key:'question',  name:'Fragewörter',     icon:'❓',
+    desc:'Fragewörter und wichtige Ausrufe. Mit diesen Wörtern kannst du grundlegende Fragen stellen und dich in Notsituationen verständigen – absolut überlebenswichtig!' },
+  { key:'body',      name:'Körperteile',     icon:'🫀',
+    desc:'Körperteile von Kopf bis Fuß. Wichtig: Im Russischen deckt "рука" sowohl Hand als auch Arm ab, "нога" sowohl Fuß als auch Bein. Kontextabhängig!' },
+  { key:'color',     name:'Farben',          icon:'🌈',
+    desc:'Grundfarben als Adjektive in der männlichen Grundform. Farbadjektive passen sich wie alle Adjektive dem Nomen an – hier lernst du die Stammform.' },
+  { key:'number',    name:'Zahlen',          icon:'🔢',
+    desc:'Zahlen von 1 bis 100. Im Russischen verändern Zahlen den Kasus des nachfolgenden Nomens – das klingt komplex, kommt aber mit der Zeit ganz natürlich.' },
+  { key:'nature',    name:'Natur & Wetter',  icon:'🌿',
+    desc:'Naturphänomene und Wetterbegriffe. Russland hat extreme Klimazonen von Taiga bis Steppe – kein Wunder, dass Wetter (погода) ein sehr häufiges Gesprächsthema ist.' },
+  { key:'place',     name:'Orte & Stadt',    icon:'🏙️',
+    desc:'Wichtige Orte und Gebäude in der Stadt. Mit diesen Wörtern kannst du nach dem Weg fragen, erklären wohin du gehst und typische Stadtorte benennen.' },
+];
+
+// ════════════════════════════════════════════════
+//  VOKABELN  (~230 Einträge, kategorisiert)
+//  Indizes 0–97 = originale Reihenfolge (localStorage-kompatibel)
+// ════════════════════════════════════════════════
+const VOCAB = [
+  // ── BEGRÜSSUNGEN (0–10) ──
+  {de:'Hallo',           ru:'Привет',          tr:'Privet',           cat:'greet'},
+  {de:'Guten Morgen',    ru:'Доброе утро',     tr:'Dobroye utro',     cat:'greet'},
+  {de:'Guten Abend',     ru:'Добрый вечер',    tr:'Dobryy vecher',    cat:'greet'},
+  {de:'Gute Nacht',      ru:'Спокойной ночи',  tr:'Spokoynoy nochi',  cat:'greet'},
+  {de:'Auf Wiedersehen', ru:'До свидания',     tr:'Do svidaniya',     cat:'greet'},
+  {de:'Tschüss',         ru:'Пока',            tr:'Poka',             cat:'greet'},
+  {de:'Danke',           ru:'Спасибо',         tr:'Spasibo',          cat:'greet'},
+  {de:'Bitte',           ru:'Пожалуйста',      tr:'Pozhaluysta',      cat:'greet'},
+  {de:'Entschuldigung',  ru:'Извините',        tr:'Izvinite',         cat:'greet'},
+  {de:'Ja',              ru:'Да',              tr:'Da',               cat:'greet'},
+  {de:'Nein',            ru:'Нет',             tr:'Net',              cat:'greet'},
+  // ── PRONOMEN (11–17) ──
+  {de:'Ich',             ru:'Я',               tr:'Ya',               cat:'pronoun'},
+  {de:'Du',              ru:'Ты',              tr:'Ty',               cat:'pronoun'},
+  {de:'Er',              ru:'Он',              tr:'On',               cat:'pronoun'},
+  {de:'Sie (sie)',       ru:'Она',             tr:'Ona',              cat:'pronoun'},
+  {de:'Wir',             ru:'Мы',              tr:'My',               cat:'pronoun'},
+  {de:'Ihr',             ru:'Вы',              tr:'Vy',               cat:'pronoun'},
+  {de:'Sie (sie pl.)',   ru:'Они',             tr:'Oni',              cat:'pronoun'},
+  // ── GRUNDVERBEN (18–39) ──
+  {de:'Sein / Haben',    ru:'Быть',            tr:'Byt\'',            cat:'verb'},
+  {de:'Machen / Tun',    ru:'Делать',          tr:'Delat\'',          cat:'verb'},
+  {de:'Gehen',           ru:'Идти',            tr:'Idti',             cat:'verb'},
+  {de:'Kommen',          ru:'Приходить',       tr:'Prikhodit\'',      cat:'verb'},
+  {de:'Sehen',           ru:'Видеть',          tr:'Videt\'',          cat:'verb'},
+  {de:'Wissen',          ru:'Знать',           tr:'Znat\'',           cat:'verb'},
+  {de:'Wollen',          ru:'Хотеть',          tr:'Khotet\'',         cat:'verb'},
+  {de:'Können',          ru:'Мочь',            tr:'Moch\'',           cat:'verb'},
+  {de:'Sagen',           ru:'Говорить',        tr:'Govorit\'',        cat:'verb'},
+  {de:'Fragen',          ru:'Спрашивать',      tr:'Sprashivat\'',     cat:'verb'},
+  {de:'Essen',           ru:'Есть',            tr:'Yest\'',           cat:'verb'},
+  {de:'Trinken',         ru:'Пить',            tr:'Pit\'',            cat:'verb'},
+  {de:'Schlafen',        ru:'Спать',           tr:'Spat\'',           cat:'verb'},
+  {de:'Arbeiten',        ru:'Работать',        tr:'Rabotat\'',        cat:'verb'},
+  {de:'Wohnen / Leben',  ru:'Жить',            tr:'Zhit\'',           cat:'verb'},
+  {de:'Lesen',           ru:'Читать',          tr:'Chitat\'',         cat:'verb'},
+  {de:'Schreiben',       ru:'Писать',          tr:'Pisat\'',          cat:'verb'},
+  {de:'Hören',           ru:'Слышать',         tr:'Slyshat\'',        cat:'verb'},
+  {de:'Verstehen',       ru:'Понимать',        tr:'Ponimat\'',        cat:'verb'},
+  {de:'Lieben',          ru:'Любить',          tr:'Lyubit\'',         cat:'verb'},
+  {de:'Kaufen',          ru:'Покупать',        tr:'Pokupat\'',        cat:'verb'},
+  {de:'Fahren',          ru:'Ехать',           tr:'Yekhat\'',         cat:'verb'},
+  // ── FAMILIE (40–47) ──
+  {de:'Mann',            ru:'Мужчина',         tr:'Muzhchina',        cat:'family'},
+  {de:'Frau',            ru:'Женщина',         tr:'Zhenshchina',      cat:'family'},
+  {de:'Kind',            ru:'Ребёнок',         tr:'Rebyonok',         cat:'family'},
+  {de:'Vater',           ru:'Отец',            tr:'Otets',            cat:'family'},
+  {de:'Mutter',          ru:'Мать',            tr:'Mat\'',            cat:'family'},
+  {de:'Bruder',          ru:'Брат',            tr:'Brat',             cat:'family'},
+  {de:'Schwester',       ru:'Сестра',          tr:'Sestra',           cat:'family'},
+  {de:'Freund',          ru:'Друг',            tr:'Drug',             cat:'family'},
+  // ── ZUHAUSE (48–57) ──
+  {de:'Haus',            ru:'Дом',             tr:'Dom',              cat:'home'},
+  {de:'Wohnung',         ru:'Квартира',        tr:'Kvartira',         cat:'home'},
+  {de:'Zimmer',          ru:'Комната',         tr:'Komnata',          cat:'home'},
+  {de:'Küche',           ru:'Кухня',           tr:'Kukhnya',          cat:'home'},
+  {de:'Straße',          ru:'Улица',           tr:'Ulitsa',           cat:'place'},
+  {de:'Stadt',           ru:'Город',           tr:'Gorod',            cat:'place'},
+  {de:'Land (Staat)',    ru:'Страна',          tr:'Strana',           cat:'place'},
+  {de:'Schule',          ru:'Школа',           tr:'Shkola',           cat:'place'},
+  {de:'Arbeit / Büro',   ru:'Работа',          tr:'Rabota',           cat:'place'},
+  {de:'Buch',            ru:'Книга',           tr:'Kniga',            cat:'home'},
+  // ── ESSEN & TRINKEN (58–63) ──
+  {de:'Wasser',          ru:'Вода',            tr:'Voda',             cat:'food'},
+  {de:'Brot',            ru:'Хлеб',            tr:'Khleb',            cat:'food'},
+  {de:'Milch',           ru:'Молоко',          tr:'Moloko',           cat:'food'},
+  {de:'Fleisch',         ru:'Мясо',            tr:'Myaso',            cat:'food'},
+  {de:'Obst',            ru:'Фрукты',          tr:'Frukty',           cat:'food'},
+  {de:'Gemüse',          ru:'Овощи',           tr:'Ovoshchi',         cat:'food'},
+  // ── VERKEHR (64–66) ──
+  {de:'Auto',            ru:'Машина',          tr:'Mashina',          cat:'transport'},
+  {de:'Zug',             ru:'Поезд',           tr:'Poyezd',           cat:'transport'},
+  {de:'Flugzeug',        ru:'Самолёт',         tr:'Samolyot',         cat:'transport'},
+  // ── ORTE (67) ──
+  {de:'Geld',            ru:'Деньги',          tr:'Den\'gi',          cat:'place'},
+  // ── ZEIT (68–76) ──
+  {de:'Zeit',            ru:'Время',           tr:'Vremya',           cat:'time'},
+  {de:'Tag',             ru:'День',            tr:'Den\'',            cat:'time'},
+  {de:'Nacht',           ru:'Ночь',            tr:'Noch\'',           cat:'time'},
+  {de:'Woche',           ru:'Неделя',          tr:'Nedelya',          cat:'time'},
+  {de:'Monat',           ru:'Месяц',           tr:'Mesyats',          cat:'time'},
+  {de:'Jahr',            ru:'Год',             tr:'God',              cat:'time'},
+  {de:'Heute',           ru:'Сегодня',         tr:'Segodnya',         cat:'time'},
+  {de:'Morgen (Datum)',  ru:'Завтра',          tr:'Zavtra',           cat:'time'},
+  {de:'Gestern',         ru:'Вчера',           tr:'Vchera',           cat:'time'},
+  // ── ADJEKTIVE (77–89) ──
+  {de:'Groß',            ru:'Большой',         tr:'Bol\'shoy',        cat:'adjective'},
+  {de:'Klein',           ru:'Маленький',       tr:'Malen\'kiy',       cat:'adjective'},
+  {de:'Gut',             ru:'Хороший',         tr:'Khoroshiy',        cat:'adjective'},
+  {de:'Schlecht',        ru:'Плохой',          tr:'Plokhoy',          cat:'adjective'},
+  {de:'Neu',             ru:'Новый',           tr:'Novyy',            cat:'adjective'},
+  {de:'Alt',             ru:'Старый',          tr:'Staryy',           cat:'adjective'},
+  {de:'Schnell',         ru:'Быстрый',         tr:'Bystryy',          cat:'adjective'},
+  {de:'Langsam',         ru:'Медленный',       tr:'Medlennyy',        cat:'adjective'},
+  {de:'Schön',           ru:'Красивый',        tr:'Krasivyy',         cat:'adjective'},
+  {de:'Heiß',            ru:'Горячий',         tr:'Goryachiy',        cat:'adjective'},
+  {de:'Kalt',            ru:'Холодный',        tr:'Kholodnyy',        cat:'adjective'},
+  {de:'Offen',           ru:'Открытый',        tr:'Otkrytyy',         cat:'adjective'},
+  {de:'Geschlossen',     ru:'Закрытый',        tr:'Zakrytyy',         cat:'adjective'},
+  // ── FRAGEWÖRTER (90–97) ──
+  {de:'Wo?',             ru:'Где?',            tr:'Gde?',             cat:'question'},
+  {de:'Wann?',           ru:'Когда?',          tr:'Kogda?',           cat:'question'},
+  {de:'Wie?',            ru:'Как?',            tr:'Kak?',             cat:'question'},
+  {de:'Warum?',          ru:'Почему?',         tr:'Pochemu?',         cat:'question'},
+  {de:'Was?',            ru:'Что?',            tr:'Chto?',            cat:'question'},
+  {de:'Wer?',            ru:'Кто?',            tr:'Kto?',             cat:'question'},
+  {de:'Wie viel?',       ru:'Сколько?',        tr:'Skol\'ko?',        cat:'question'},
+  {de:'Hilfe!',          ru:'Помогите!',       tr:'Pomogite!',        cat:'question'},
+
+  // ════ NEUE EINTRÄGE (ab Index 98) ════
+
+  // ── Mehr Begrüßungen ──
+  {de:'Guten Tag',       ru:'Добрый день',     tr:'Dobryy den\'',     cat:'greet'},
+  {de:'Wie geht\'s?',    ru:'Как дела?',       tr:'Kak dela?',        cat:'greet'},
+  {de:'Gut, danke',      ru:'Хорошо, спасибо', tr:'Khorosho, spasibo',cat:'greet'},
+  {de:'Kein Problem',    ru:'Не проблема',     tr:'Ne problema',      cat:'greet'},
+  {de:'Willkommen',      ru:'Добро пожаловать',tr:'Dobro pozhalovat\'' ,cat:'greet'},
+  {de:'Tut mir leid',    ru:'Извини',          tr:'Izvini',           cat:'greet'},
+
+  // ── Mehr Pronomen ──
+  {de:'Es',              ru:'Оно',             tr:'Ono',              cat:'pronoun'},
+  {de:'Mein / Meine',    ru:'Мой / Моя',       tr:'Moy / Moya',       cat:'pronoun'},
+  {de:'Dein / Deine',    ru:'Твой / Твоя',     tr:'Tvoy / Tvoya',     cat:'pronoun'},
+
+  // ── Mehr Verben ──
+  {de:'Nehmen',          ru:'Брать',           tr:'Brat\'',           cat:'verb'},
+  {de:'Geben',           ru:'Давать',          tr:'Davat\'',          cat:'verb'},
+  {de:'Spielen',         ru:'Играть',          tr:'Igrat\'',          cat:'verb'},
+  {de:'Laufen',          ru:'Бежать',          tr:'Bezhat\'',         cat:'verb'},
+  {de:'Kochen',          ru:'Готовить',        tr:'Gotovit\'',        cat:'verb'},
+  {de:'Öffnen',          ru:'Открывать',       tr:'Otkryvat\'',       cat:'verb'},
+  {de:'Suchen',          ru:'Искать',          tr:'Iskat\'',          cat:'verb'},
+  {de:'Finden',          ru:'Находить',        tr:'Nakhodit\'',       cat:'verb'},
+  {de:'Helfen',          ru:'Помогать',        tr:'Pomogat\'',        cat:'verb'},
+  {de:'Warten',          ru:'Ждать',           tr:'Zhdat\'',          cat:'verb'},
+  {de:'Sprechen',        ru:'Разговаривать',   tr:'Razgovarivaт\'',   cat:'verb'},
+  {de:'Denken',          ru:'Думать',          tr:'Dumat\'',          cat:'verb'},
+
+  // ── Mehr Familie ──
+  {de:'Großvater / Opa', ru:'Дедушка',         tr:'Dedushka',         cat:'family'},
+  {de:'Großmutter / Oma',ru:'Бабушка',         tr:'Babushka',         cat:'family'},
+  {de:'Sohn',            ru:'Сын',             tr:'Syn',              cat:'family'},
+  {de:'Tochter',         ru:'Дочь',            tr:'Doch\'',           cat:'family'},
+  {de:'Onkel',           ru:'Дядя',            tr:'Dyadya',           cat:'family'},
+  {de:'Tante',           ru:'Тётя',            tr:'Tyotya',           cat:'family'},
+  {de:'Baby',            ru:'Младенец',        tr:'Mladenets',        cat:'family'},
+  {de:'Freundin',        ru:'Подруга',         tr:'Podruga',          cat:'family'},
+
+  // ── Mehr Zuhause ──
+  {de:'Bad / Badezimmer',ru:'Ванная',          tr:'Vannaya',          cat:'home'},
+  {de:'Tür',             ru:'Дверь',           tr:'Dver\'',           cat:'home'},
+  {de:'Fenster',         ru:'Окно',            tr:'Okno',             cat:'home'},
+  {de:'Tisch',           ru:'Стол',            tr:'Stol',             cat:'home'},
+  {de:'Stuhl',           ru:'Стул',            tr:'Stul',             cat:'home'},
+  {de:'Bett',            ru:'Кровать',         tr:'Krovat\'',         cat:'home'},
+  {de:'Sofa',            ru:'Диван',           tr:'Divan',            cat:'home'},
+  {de:'Lampe',           ru:'Лампа',           tr:'Lampa',            cat:'home'},
+  {de:'Schlüssel',       ru:'Ключ',            tr:'Klyuch',           cat:'home'},
+  {de:'Telefon',         ru:'Телефон',         tr:'Telefon',          cat:'home'},
+
+  // ── Mehr Essen & Trinken ──
+  {de:'Kaffee',          ru:'Кофе',            tr:'Kofe',             cat:'food'},
+  {de:'Tee',             ru:'Чай',             tr:'Chay',             cat:'food'},
+  {de:'Bier',            ru:'Пиво',            tr:'Pivo',             cat:'food'},
+  {de:'Suppe',           ru:'Суп',             tr:'Sup',              cat:'food'},
+  {de:'Salat',           ru:'Салат',           tr:'Salat',            cat:'food'},
+  {de:'Reis',            ru:'Рис',             tr:'Ris',              cat:'food'},
+  {de:'Fisch',           ru:'Рыба',            tr:'Ryba',             cat:'food'},
+  {de:'Ei',              ru:'Яйцо',            tr:'Yaytso',           cat:'food'},
+  {de:'Käse',            ru:'Сыр',             tr:'Syr',              cat:'food'},
+  {de:'Apfel',           ru:'Яблоко',          tr:'Yabloko',          cat:'food'},
+  {de:'Zucker',          ru:'Сахар',           tr:'Sakhar',           cat:'food'},
+  {de:'Salz',            ru:'Соль',            tr:'Sol\'',            cat:'food'},
+
+  // ── Mehr Verkehr ──
+  {de:'Bus',             ru:'Автобус',         tr:'Avtobus',          cat:'transport'},
+  {de:'Taxi',            ru:'Такси',           tr:'Taksi',            cat:'transport'},
+  {de:'U-Bahn / Metro',  ru:'Метро',           tr:'Metro',            cat:'transport'},
+  {de:'Fahrrad',         ru:'Велосипед',       tr:'Velosiped',        cat:'transport'},
+  {de:'Schiff',          ru:'Корабль',         tr:'Korabl\'',         cat:'transport'},
+  {de:'Ticket / Karte',  ru:'Билет',           tr:'Bilet',            cat:'transport'},
+
+  // ── Mehr Zeit ──
+  {de:'Stunde',          ru:'Час',             tr:'Chas',             cat:'time'},
+  {de:'Minute',          ru:'Минута',          tr:'Minuta',           cat:'time'},
+  {de:'Morgen (früh)',   ru:'Утро',            tr:'Utro',             cat:'time'},
+  {de:'Mittag',          ru:'Полдень',         tr:'Polden\'',         cat:'time'},
+  {de:'Abend',           ru:'Вечер',           tr:'Vecher',           cat:'time'},
+  {de:'Jetzt',           ru:'Сейчас',          tr:'Seychas',          cat:'time'},
+
+  // ── Mehr Adjektive ──
+  {de:'Warm',            ru:'Тёплый',          tr:'Tyoplyy',          cat:'adjective'},
+  {de:'Jung',            ru:'Молодой',         tr:'Molodoy',          cat:'adjective'},
+  {de:'Teuer',           ru:'Дорогой',         tr:'Dorogoy',          cat:'adjective'},
+  {de:'Billig',          ru:'Дешёвый',         tr:'Deshovyy',         cat:'adjective'},
+  {de:'Glücklich',       ru:'Счастливый',      tr:'Schastlivyy',      cat:'adjective'},
+  {de:'Müde',            ru:'Усталый',         tr:'Ustalyy',          cat:'adjective'},
+  {de:'Leer',            ru:'Пустой',          tr:'Pustoy',           cat:'adjective'},
+  {de:'Voll',            ru:'Полный',          tr:'Polnyy',           cat:'adjective'},
+
+  // ── Mehr Fragewörter ──
+  {de:'Wohin?',          ru:'Куда?',           tr:'Kuda?',            cat:'question'},
+
+  // ── KÖRPERTEILE ──
+  {de:'Kopf',            ru:'Голова',          tr:'Golova',           cat:'body'},
+  {de:'Auge',            ru:'Глаз',            tr:'Glaz',             cat:'body'},
+  {de:'Ohr',             ru:'Ухо',             tr:'Ukho',             cat:'body'},
+  {de:'Nase',            ru:'Нос',             tr:'Nos',              cat:'body'},
+  {de:'Mund',            ru:'Рот',             tr:'Rot',              cat:'body'},
+  {de:'Zahn',            ru:'Зуб',             tr:'Zub',              cat:'body'},
+  {de:'Haar',            ru:'Волосы',          tr:'Volosy',           cat:'body'},
+  {de:'Hand / Arm',      ru:'Рука',            tr:'Ruka',             cat:'body'},
+  {de:'Fuß / Bein',      ru:'Нога',            tr:'Noga',             cat:'body'},
+  {de:'Herz',            ru:'Сердце',          tr:'Serdtse',          cat:'body'},
+  {de:'Bauch',           ru:'Живот',           tr:'Zhivot',           cat:'body'},
+  {de:'Rücken',          ru:'Спина',           tr:'Spina',            cat:'body'},
+  {de:'Schulter',        ru:'Плечо',           tr:'Plecho',           cat:'body'},
+  {de:'Finger',          ru:'Палец',           tr:'Palets',           cat:'body'},
+
+  // ── FARBEN ──
+  {de:'Rot',             ru:'Красный',         tr:'Krasnyy',          cat:'color'},
+  {de:'Blau',            ru:'Синий',           tr:'Siniy',            cat:'color'},
+  {de:'Grün',            ru:'Зелёный',         tr:'Zelyonyy',         cat:'color'},
+  {de:'Gelb',            ru:'Жёлтый',          tr:'Zholtyy',          cat:'color'},
+  {de:'Schwarz',         ru:'Чёрный',          tr:'Chornyy',          cat:'color'},
+  {de:'Weiß',            ru:'Белый',           tr:'Belyy',            cat:'color'},
+  {de:'Grau',            ru:'Серый',           tr:'Seryy',            cat:'color'},
+  {de:'Orange',          ru:'Оранжевый',       tr:'Oranzhevy',        cat:'color'},
+  {de:'Lila / Violett',  ru:'Фиолетовый',      tr:'Fioletovy',        cat:'color'},
+  {de:'Rosa',            ru:'Розовый',         tr:'Rozovy',           cat:'color'},
+  {de:'Braun',           ru:'Коричневый',      tr:'Korichnevy',       cat:'color'},
+
+  // ── ZAHLEN ──
+  {de:'Eins',            ru:'Один',            tr:'Odin',             cat:'number'},
+  {de:'Zwei',            ru:'Два',             tr:'Dva',              cat:'number'},
+  {de:'Drei',            ru:'Три',             tr:'Tri',              cat:'number'},
+  {de:'Vier',            ru:'Четыре',          tr:'Chetyre',          cat:'number'},
+  {de:'Fünf',            ru:'Пять',            tr:'Pyat\'',           cat:'number'},
+  {de:'Sechs',           ru:'Шесть',           tr:'Shest\'',          cat:'number'},
+  {de:'Sieben',          ru:'Семь',            tr:'Sem\'',            cat:'number'},
+  {de:'Acht',            ru:'Восемь',          tr:'Vosem\'',          cat:'number'},
+  {de:'Neun',            ru:'Девять',          tr:'Devyat\'',         cat:'number'},
+  {de:'Zehn',            ru:'Десять',          tr:'Desyat\'',         cat:'number'},
+  {de:'Zwanzig',         ru:'Двадцать',        tr:'Dvadtsat\'',       cat:'number'},
+  {de:'Hundert',         ru:'Сто',             tr:'Sto',              cat:'number'},
+
+  // ── NATUR & WETTER ──
+  {de:'Sonne',           ru:'Солнце',          tr:'Solntse',          cat:'nature'},
+  {de:'Mond',            ru:'Луна',            tr:'Luna',             cat:'nature'},
+  {de:'Stern',           ru:'Звезда',          tr:'Zvezda',           cat:'nature'},
+  {de:'Regen',           ru:'Дождь',           tr:'Dozhd\'',          cat:'nature'},
+  {de:'Schnee',          ru:'Снег',            tr:'Sneg',             cat:'nature'},
+  {de:'Wind',            ru:'Ветер',           tr:'Veter',            cat:'nature'},
+  {de:'Himmel',          ru:'Небо',            tr:'Nebo',             cat:'nature'},
+  {de:'Erde / Boden',    ru:'Земля',           tr:'Zemlya',           cat:'nature'},
+  {de:'Fluss',           ru:'Река',            tr:'Reka',             cat:'nature'},
+  {de:'Meer',            ru:'Море',            tr:'More',             cat:'nature'},
+  {de:'Berg',            ru:'Гора',            tr:'Gora',             cat:'nature'},
+  {de:'Wald',            ru:'Лес',             tr:'Les',              cat:'nature'},
+  {de:'Blume',           ru:'Цветок',          tr:'Tsvetok',          cat:'nature'},
+  {de:'Baum',            ru:'Дерево',          tr:'Derevo',           cat:'nature'},
+  {de:'Feuer',           ru:'Огонь',           tr:'Ogon\'',           cat:'nature'},
+  {de:'Wetter',          ru:'Погода',          tr:'Pogoda',           cat:'nature'},
+
+  // ── ORTE & STADT ──
+  {de:'Restaurant',      ru:'Ресторан',        tr:'Restoran',         cat:'place'},
+  {de:'Hotel',           ru:'Гостиница',       tr:'Gostinitza',       cat:'place'},
+  {de:'Krankenhaus',     ru:'Больница',        tr:'Bolnitsa',         cat:'place'},
+  {de:'Apotheke',        ru:'Аптека',          tr:'Apteka',           cat:'place'},
+  {de:'Supermarkt',      ru:'Супермаркет',     tr:'Supermarket',      cat:'place'},
+  {de:'Bahnhof',         ru:'Вокзал',          tr:'Vokzal',           cat:'place'},
+  {de:'Flughafen',       ru:'Аэропорт',        tr:'Aeroport',         cat:'place'},
+  {de:'Park',            ru:'Парк',            tr:'Park',             cat:'place'},
+  {de:'Museum',          ru:'Музей',           tr:'Muzey',            cat:'place'},
+  {de:'Bibliothek',      ru:'Библиотека',      tr:'Biblioteka',       cat:'place'},
+  {de:'Markt',           ru:'Рынок',           tr:'Rynok',            cat:'place'},
+  {de:'Kirche',          ru:'Церковь',         tr:'Tserkov\'',        cat:'place'},
+];
+
+// ════════════════════════════════════════════════
+//  BEISPIELSÄTZE  (Index entspricht VOCAB-Index)
+//  Lücke = ___ → wird durch das russische Wort ersetzt
+// ════════════════════════════════════════════════
+const SENTENCES = [
+  // 0–10  Begrüßungen (original)
+  'Ich sage ___, wenn ich einen Freund treffe.',
+  'Ich wünsche dir ___, wenn du aufwachst.',
+  'Abends begrüßen wir uns mit ___.',
+  'Vor dem Einschlafen sagt man ___.',
+  'Beim Abschied sage ich ___.',
+  'Ich winke und sage ___.',
+  'Ich sage ___, wenn mir jemand hilft.',
+  'Ich sage ___, wenn ich etwas möchte.',
+  'Ich sage ___, wenn ich einen Fehler mache.',
+  'Auf die Frage antworte ich mit ___.',
+  'Ich schüttle den Kopf und sage ___.',
+  // 11–17  Pronomen (original)
+  '___ lerne täglich Russisch.',
+  '___ bist mein bester Freund.',
+  '___ heißt Alexej und kommt aus Moskau.',
+  '___ lernt Russisch seit einem Jahr.',
+  '___ fahren nächsten Sommer nach Russland.',
+  '___ sprecht sehr gut Russisch.',
+  '___ wohnen in St. Petersburg.',
+  // 18–39  Grundverben (original)
+  'Ich möchte ein guter Freund ___.',
+  'Was willst du heute ___?',
+  'Ich will in den Park ___.',
+  'Wann wirst du ___?',
+  'Ich kann die Berge in der Ferne ___.',
+  'Ich will alles über Russland ___.',
+  'Ich ___, Russisch zu lernen.',
+  'Weißt du, ob ich das ___ werde?',
+  'Was willst du auf Russisch ___?',
+  'Ich muss den Lehrer ___.',
+  'Ich will Suppe zum Mittag ___.',
+  'Möchtest du Tee ___?',
+  'Es ist spät, ich möchte ___.',
+  'Mein Vater geht jeden Morgen ___.',
+  'Ich möchte gerne in Moskau ___.',
+  'Abends lerne ich, indem ich russische Bücher ___.',
+  'Ich lerne, russische Buchstaben zu ___.',
+  'Kannst du die Musik ___?',
+  'Ich kann dich gut ___.',
+  'Ich ___ Russland und seine Kultur.',
+  'Ich gehe in den Supermarkt, um Brot zu ___.',
+  'Ich will im Sommer nach Russland ___.',
+  // 40–47  Familie (original)
+  'Der ___ kauft Brot im Supermarkt.',
+  'Die ___ arbeitet als Ärztin.',
+  'Das ___ spielt im Park.',
+  'Mein ___ arbeitet in der Stadt.',
+  'Meine ___ kocht sehr gut.',
+  'Mein ___ heißt Sergej.',
+  'Meine ___ wohnt in Moskau.',
+  'Mein bester ___ heißt Ivan.',
+  // 48–57  Zuhause / Orte (original)
+  'Wir wohnen in einem großen ___.',
+  'Meine ___ hat drei Zimmer.',
+  'Mein ___ ist sehr gemütlich.',
+  'In der ___ koche ich das Essen.',
+  'Ich wohne in einer ruhigen ___.',
+  'Moskau ist eine sehr große ___.',
+  'Russland ist ein riesiges ___.',
+  'Die Kinder gehen jeden Tag in die ___.',
+  'Mein Vater fährt jeden Morgen zur ___.',
+  'Ich lese ein spannendes ___.',
+  // 58–63  Essen & Trinken (original)
+  'Ich trinke täglich viel ___.',
+  'Russisches ___ ist besonders lecker.',
+  'Das Kind trinkt ein Glas ___.',
+  'Zum Abendessen essen wir ___.',
+  'Ich esse jeden Tag frisches ___.',
+  'Sie kocht ___ für das Mittagessen.',
+  // 64–66  Verkehr (original)
+  'Mein Vater fährt zur Arbeit mit der ___.',
+  'Wir fahren mit dem ___ nach Moskau.',
+  'Das ___ fliegt sehr hoch.',
+  // 67  Orte – Geld (original)
+  'Ich brauche ___ für das Zugticket.',
+  // 68–76  Zeit (original)
+  'Ich habe keine ___ zum Lernen heute.',
+  'Heute ist ein wunderschöner ___.',
+  'In der ___ schlafen alle Menschen.',
+  'Ich lerne seit einer ___ Russisch.',
+  'Ein ___ hat ungefähr 30 Tage.',
+  'Ein ___ hat zwölf Monate.',
+  '___ lerne ich neue russische Wörter.',
+  '___ fahre ich nach St. Petersburg.',
+  '___ habe ich sehr viel gelernt.',
+  // 77–89  Adjektive (original)
+  'Das Haus ist sehr ___.',
+  'Das Kätzchen ist sehr ___.',
+  'Das Buch ist wirklich ___.',
+  'Das Wetter heute ist ___.',
+  'Ich habe ein ___ Fahrrad.',
+  'Das ist ein ___ Gebäude.',
+  'Der Zug ist sehr ___.',
+  'Die Schildkröte ist sehr ___.',
+  'Moskau ist eine ___ Stadt.',
+  'Der Tee ist zu ___.',
+  'Im Winter in Russland ist es sehr ___.',
+  'Das Fenster ist ___.',
+  'Der Laden ist heute ___.',
+  // 90–97  Fragewörter (original)
+  '___ ist der Bahnhof, bitte?',
+  '___ kommt der nächste Zug?',
+  '___ heißt du?',
+  '___ lernst du Russisch?',
+  '___ machst du gerade?',
+  '___ spricht hier Russisch?',
+  '___ kostet das?',
+  'Ich bin verloren und rufe ___!',
+  // 98–103  Mehr Begrüßungen
+  'Zur Mittagszeit sage ich ___.',
+  'Ich frage meinen Freund: ___?',
+  'Auf „Wie geht\'s?" antworte ich: ___.',
+  'Er sagt ___, als ich mich entschuldige.',
+  'An der Tür begrüße ich den Gast: ___!',
+  'Ich sage ___, weil ich zu spät bin.',
+  // 104–106  Mehr Pronomen
+  '___ ist heute sehr kalt draußen.',
+  'Das ist ___ Buch.',
+  'Das ist ___ Freund.',
+  // 107–118  Mehr Verben
+  'Darf ich dein Buch ___?',
+  'Kannst du mir das Buch ___?',
+  'Die Kinder ___ im Park.',
+  'Er muss schnell zum Bus ___.',
+  'Meine Mutter kann sehr gut ___.',
+  'Kannst du bitte die Tür ___?',
+  'Ich muss meinen Schlüssel ___.',
+  'Ich kann meinen Schlüssel nicht ___.',
+  'Kannst du mir bitte ___?',
+  'Ich muss auf den Bus ___.',
+  'Ich lerne, auf Russisch zu ___.',
+  'Ich muss kurz darüber ___.',
+  // 119–126  Mehr Familie
+  'Mein ___ erzählt viele Geschichten.',
+  'Meine ___ backt den besten Kuchen.',
+  'Ihr ___ ist sieben Jahre alt.',
+  'Ihre ___ studiert in Moskau.',
+  'Mein ___ wohnt in St. Petersburg.',
+  'Meine ___ schenkt mir immer etwas.',
+  'Das ___ schläft gerade im Kinderwagen.',
+  'Meine ___ spricht fließend Russisch.',
+  // 127–136  Mehr Zuhause
+  'Ich dusche jeden Morgen im ___.',
+  'Bitte schließ die ___ hinter dir.',
+  'Das ___ ist offen, es ist warm draußen.',
+  'Wir essen gemeinsam am ___.',
+  'Setz dich auf den ___.',
+  'Ich schlafe in meinem ___.',
+  'Er liegt auf dem ___ und sieht fern.',
+  'Die ___ leuchtet hell im Zimmer.',
+  'Ich suche meinen ___.',
+  'Mein ___ klingelt ständig.',
+  // 137–148  Mehr Essen & Trinken
+  'Am Morgen trinke ich immer ___.',
+  'In Russland trinkt man sehr viel ___.',
+  'Er trinkt ein kaltes ___ nach der Arbeit.',
+  'Zum Mittagessen esse ich gerne ___.',
+  'Zum Abendessen gibt es frischen ___.',
+  'Wir essen ___ als Beilage zum Fisch.',
+  'Ich kaufe frischen ___ auf dem Markt.',
+  'Zum Frühstück esse ich ein ___.',
+  'Ich lege ___ auf das Brot.',
+  'Ich esse täglich einen ___.',
+  'Ich tue ___ in den Kaffee.',
+  'Das Essen braucht etwas mehr ___.',
+  // 149–154  Mehr Verkehr
+  'Ich fahre mit dem ___ zur Arbeit.',
+  'Ich nehme ein ___ zum Bahnhof.',
+  'In Moskau ist das ___ sehr praktisch.',
+  'Im Sommer fahre ich mit dem ___.',
+  'Das ___ fährt über das Meer.',
+  'Ich kaufe ein ___ für den Zug.',
+  // 155–160  Mehr Zeit
+  'Ich lerne täglich eine ___ Russisch.',
+  'Warte eine ___, ich komme gleich.',
+  'Am ___ trinke ich immer Kaffee.',
+  'Um ___ esse ich mein Mittagessen.',
+  'Am ___ lese ich ein Buch.',
+  '___ lerne ich fleißig Russisch.',
+  // 161–168  Mehr Adjektive
+  'Das Wasser ist angenehm ___.',
+  'Er ist noch sehr ___ und hat viel Zeit.',
+  'Das Restaurant ist sehr ___.',
+  'Das Buch ist sehr ___.',
+  'Ich bin sehr ___, weil ich Russisch lerne.',
+  'Nach einem langen Tag bin ich sehr ___.',
+  'Das Glas ist ___.',
+  'Der Bus ist heute total ___.',
+  // 169  Mehr Fragewörter
+  '___ fährst du diesen Sommer?',
+  // 170–183  Körperteile
+  'Mir tut der ___ weh, ich brauche eine Tablette.',
+  'Ich habe ein blaues ___ nach dem Sturz.',
+  'Ich höre mit dem ___, was du sagst.',
+  'Meine ___ ist kalt, es ist Winter.',
+  'Ich öffne den ___ beim Zahnarzt.',
+  'Mir tut ein ___ weh, ich muss zum Zahnarzt.',
+  'Sie hat langes, dunkles ___.',
+  'Ich schreibe mit der ___.',
+  'Ich stehe auf einem ___.',
+  'Mein ___ schlägt schnell beim Sport.',
+  'Mir tut der ___ weh, ich habe zu viel gegessen.',
+  'Mein ___ tut weh nach langem Sitzen.',
+  'Er trägt die Tasche auf der ___.',
+  'Ich zeige mit dem ___ auf die Karte.',
+  // 184–194  Farben
+  'Die Ampel zeigt ___ – ich halte an.',
+  'Der Himmel heute ist strahlend ___.',
+  'Das Gras im Park ist schön ___.',
+  'Die Sonne ist ___ und scheint hell.',
+  'Seine Katze ist ganz ___.',
+  'Der Schnee ist rein ___.',
+  'Der Himmel ist heute ___, es wird regnen.',
+  'Die Karotte ist ___.',
+  'Die Blume ist ___.',
+  'Das Kleid ist ___.',
+  'Der Bär hat ein ___ Fell.',
+  // 195–206  Zahlen
+  'Ich habe ___ Bruder.',
+  'Ich kaufe ___ Brote.',
+  'Ich esse ___ Äpfel am Tag.',
+  'Ich lerne täglich ___ Stunden.',
+  'Ich warte ___ Minuten auf den Bus.',
+  'Es ist ___ Uhr morgens.',
+  'Eine Woche hat ___ Tage.',
+  'Ich schlafe ___ Stunden pro Nacht.',
+  'Es ist ___ Uhr, ich muss aufstehen.',
+  'Ich zähle bis ___ auf Russisch.',
+  'Er ist ___ Jahre alt.',
+  'Das kostet ___ Rubel.',
+  // 207–222  Natur & Wetter
+  'Die ___ scheint heute sehr hell.',
+  'Der ___ leuchtet in der Nacht.',
+  'Ich sehe einen ___ am Himmel.',
+  'Nimm einen Regenschirm, es gibt ___.',
+  'In Russland liegt im Winter viel ___.',
+  'Der ___ ist heute sehr stark.',
+  'Der ___ ist heute strahlend blau.',
+  'Die ___ dreht sich um die Sonne.',
+  'Die Wolga ist der längste ___ Russlands.',
+  'Ich schwimme gerne im ___.',
+  'Der ___ ist über 3000 Meter hoch.',
+  'Im ___ leben Bären und Wölfe.',
+  'Ich schenke Mama eine rote ___.',
+  'Der ___ ist sehr alt und groß.',
+  'Am Lagerfeuer brennt ein helles ___.',
+  'Das ___ in Russland ist im Winter sehr kalt.',
+  // 223–234  Orte & Stadt (neue)
+  'Wir essen heute Abend im ___.',
+  'Ich schlafe im ___ während meiner Reise.',
+  'Der Arzt arbeitet im ___.',
+  'Ich kaufe Medizin in der ___.',
+  'Ich kaufe Lebensmittel im ___.',
+  'Der Zug fährt vom ___ ab.',
+  'Das Flugzeug landet am ___.',
+  'Ich gehe spazieren im ___.',
+  'Im ___ gibt es viele alte Gemälde.',
+  'In der ___ leihe ich mir Bücher aus.',
+  'Ich kaufe frisches Obst auf dem ___.',
+  'Die ___ ist sehr alt und wunderschön.',
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let direction        = 'de';
+let activeMode       = 'card';
+let selectedCategory = 'all';
+let progress         = {};
+let session = { queue:[], pos:0, modeSequence:[], correct:0, wrong:0, currentIdx:-1 };
+
+// ════════════════════════════════════════════════
+//  PERSISTENCE
+// ════════════════════════════════════════════════
+function saveProgress() {
+  localStorage.setItem('rv_progress', JSON.stringify(progress));
+}
+function loadProgress() {
+  const raw = localStorage.getItem('rv_progress');
+  if (raw) progress = JSON.parse(raw);
+  VOCAB.forEach((_,i) => { if (!progress[i]) progress[i] = {correct:0, total:0, mastered:false}; });
+  updateHomeStats();
+}
+function updateHomeStats() {
+  const mastered = Object.values(progress).filter(p=>p.mastered).length;
+  const learning  = Object.values(progress).filter(p=>!p.mastered && p.total>0).length;
+  document.getElementById('statMastered').textContent = mastered;
+  document.getElementById('statLearning').textContent = learning;
+  document.getElementById('statTotal').textContent    = VOCAB.length;
+  const pct = Math.round(mastered / VOCAB.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progText').textContent  = mastered + ' / ' + VOCAB.length;
+  renderCategoryPicker();
+}
+
+// ════════════════════════════════════════════════
+//  UI CONTROLS
+// ════════════════════════════════════════════════
+function setDir(dir) {
+  direction = dir;
+  document.getElementById('dirDE').classList.toggle('active', dir==='de');
+  document.getElementById('dirRU').classList.toggle('active', dir==='ru');
+}
+function selectMode(mode) {
+  activeMode = mode;
+  ['card','mc','type','fill','mix','weak'].forEach(m => {
+    const id = 'mode' + m.charAt(0).toUpperCase() + m.slice(1);
+    document.getElementById(id).classList.toggle('selected', m===mode);
+  });
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Nav nur auf Haupt-Screens sichtbar
+  const navScreens = ['screenHome', 'screenGrammar'];
+  document.getElementById('mainNav').style.display = navScreens.includes(id) ? '' : 'none';
+}
+function goHome() {
+  // Re-enable intro start button in case it was disabled (weak mode, no words)
+  const startBtn = document.querySelector('#screenIntro .btn-primary');
+  if (startBtn) { startBtn.disabled = false; startBtn.style.opacity = ''; startBtn.style.cursor = ''; }
+  loadProgress();
+  showScreen('screenHome');
+}
+
+function selectCategory(key) {
+  selectedCategory = key;
+  document.querySelectorAll('.cat-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.cat === key)
+  );
+}
+
+function getCatProgress(catKey) {
+  const indices = catKey === 'all'
+    ? VOCAB.map((_,i) => i)
+    : VOCAB.map((_,i) => i).filter(i => VOCAB[i].cat === catKey);
+  const total    = indices.length;
+  const mastered = indices.filter(i => progress[i] && progress[i].mastered).length;
+  return { mastered, total };
+}
+
+function renderCategoryPicker() {
+  const picker = document.getElementById('catPicker');
+  picker.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const { mastered, total } = getCatProgress(cat.key);
+    const pct = total > 0 ? Math.round(mastered / total * 100) : 0;
+
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (cat.key === selectedCategory ? ' active' : '');
+    btn.dataset.cat = cat.key;
+    btn.onclick = () => selectCategory(cat.key);
+
+    const label = document.createElement('span');
+    label.className = 'cat-btn-label';
+    label.textContent = cat.icon + ' ' + cat.name;
+
+    const prog = document.createElement('span');
+    prog.className = 'cat-btn-prog';
+
+    const bar = document.createElement('span');
+    bar.className = 'cat-btn-bar';
+    const fill = document.createElement('span');
+    fill.className = 'cat-btn-bar-fill';
+    fill.style.width = pct + '%';
+    bar.appendChild(fill);
+
+    const txt = document.createElement('span');
+    txt.textContent = mastered + '/' + total;
+
+    prog.appendChild(bar);
+    prog.appendChild(txt);
+    btn.appendChild(label);
+    btn.appendChild(prog);
+    picker.appendChild(btn);
+  });
+}
+
+function tryStartSession() {
+  if (activeMode === 'weak') {
+    showWeakIntro();
+  } else {
+    showIntro(selectedCategory);
+  }
+}
+
+function getWeakWords() {
+  return VOCAB.map((_,i) => i)
+    .filter(i => {
+      const p = progress[i];
+      return p && (p.total - p.correct) >= 5;
+    })
+    .sort((a, b) => {
+      const pa = progress[a], pb = progress[b];
+      const ra = pa.total > 0 ? pa.correct / pa.total : 0;
+      const rb = pb.total > 0 ? pb.correct / pb.total : 0;
+      return ra - rb; // worst success rate first
+    });
+}
+
+function showWeakIntro() {
+  const weakIndices = getWeakWords();
+  const hasWords    = weakIndices.length > 0;
+
+  document.getElementById('introCatIcon').textContent = '🎯';
+  document.getElementById('introCatName').textContent = 'Schwächste Wörter';
+  document.getElementById('introCount').textContent   = weakIndices.length + ' Wörter';
+  document.getElementById('introCatDesc').textContent = hasWords
+    ? 'Wörter mit mindestens 5 Fehlversuchen, sortiert nach schlechtester Erfolgsquote. Übe sie intensiv – sie kommen immer wieder, bis sie sitzen!'
+    : 'Noch keine schwachen Wörter. Ein Wort braucht mindestens 5 Fehlversuche (gesamt), um hier zu erscheinen. Übe zuerst die anderen Modi!';
+
+  const list = document.getElementById('introWordList');
+  list.innerHTML = '';
+
+  if (!hasWords) {
+    const empty = document.createElement('div');
+    empty.className = 'weak-empty';
+    empty.textContent = 'Übe mehr Wörter, dann erscheinen hier deine größten Baustellen.';
+    list.appendChild(empty);
+  } else {
+    weakIndices.forEach(idx => {
+      const v     = VOCAB[idx];
+      const p     = progress[idx];
+      const wrong = p.total - p.correct;
+      const rate  = p.total > 0 ? Math.round(p.correct / p.total * 100) : 0;
+
+      const item = document.createElement('div');
+      item.className = 'intro-word-item';
+
+      const ru   = document.createElement('span'); ru.className   = 'intro-ru'; ru.textContent = v.ru;
+      const tr   = document.createElement('span'); tr.className   = 'intro-tr'; tr.textContent = v.tr;
+      const de   = document.createElement('span'); de.className   = 'intro-de'; de.textContent = v.de;
+      const stat = document.createElement('span'); stat.className = 'weak-word-stat';
+      stat.textContent = wrong + '✗ · ' + rate + '%';
+
+      item.appendChild(ru); item.appendChild(tr); item.appendChild(de); item.appendChild(stat);
+      list.appendChild(item);
+    });
+  }
+
+  // Disable "Jetzt üben" if no weak words
+  const startBtn = document.querySelector('#screenIntro .btn-primary');
+  if (startBtn) {
+    startBtn.disabled = !hasWords;
+    startBtn.style.opacity = hasWords ? '' : '0.4';
+    startBtn.style.cursor  = hasWords ? '' : 'not-allowed';
+  }
+
+  showScreen('screenIntro');
+}
+
+function showIntro(catKey) {
+  const cat   = CATEGORIES.find(c => c.key === catKey);
+  const words = catKey === 'all' ? VOCAB : VOCAB.filter(v => v.cat === catKey);
+
+  document.getElementById('introCatIcon').textContent = cat.icon;
+  document.getElementById('introCatName').textContent = cat.name;
+  document.getElementById('introCatDesc').textContent = cat.desc;
+  document.getElementById('introCount').textContent   = words.length + ' Wörter';
+
+  const list = document.getElementById('introWordList');
+  list.innerHTML = '';
+  words.forEach(v => {
+    const item = document.createElement('div');
+    item.className = 'intro-word-item';
+
+    const ru  = document.createElement('span'); ru.className  = 'intro-ru'; ru.textContent = v.ru;
+    const tr  = document.createElement('span'); tr.className  = 'intro-tr'; tr.textContent = v.tr;
+    const de  = document.createElement('span'); de.className  = 'intro-de'; de.textContent = v.de;
+    const btn = document.createElement('button');
+    btn.className = 'intro-speak-btn';
+    btn.textContent = '🔊';
+    btn.onclick = () => speakWord(v.ru);
+
+    item.appendChild(ru); item.appendChild(tr); item.appendChild(de); item.appendChild(btn);
+    list.appendChild(item);
+  });
+
+  showScreen('screenIntro');
+}
+
+function speakWord(ruText) {
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(ruText);
+  u.lang = 'ru-RU'; u.rate = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════
+//  QUEUE  (spaced repetition light)
+// ════════════════════════════════════════════════
+function buildQueue() {
+  if (activeMode === 'weak') {
+    return getWeakWords().slice(0, 10);
+  }
+
+  const indices = selectedCategory === 'all'
+    ? VOCAB.map((_,i) => i)
+    : VOCAB.map((_,i) => i).filter(i => VOCAB[i].cat === selectedCategory);
+
+  const scores = indices.map(i => {
+    const p = progress[i];
+    if (p.mastered)  return {i, score:0.05};
+    if (p.total===0) return {i, score:1};
+    return {i, score: 1 - p.correct/p.total + 0.1};
+  });
+  scores.sort((a,b) => b.score - a.score);
+  const pool = scores.slice(0, Math.min(20, scores.length));
+  return shuffle(pool.map(s => s.i)).slice(0, Math.min(10, pool.length));
+}
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ════════════════════════════════════════════════
+//  SESSION
+// ════════════════════════════════════════════════
+function startSession() {
+  session.queue   = buildQueue();
+  session.pos     = 0;
+  session.correct = 0;
+  session.wrong   = 0;
+  if (activeMode==='mix') {
+    const modes = ['card','mc','type','fill'];
+    session.modeSequence = session.queue.map(()=>modes[Math.floor(Math.random()*4)]);
+  }
+  showNext();
+}
+function showNext() {
+  if (session.pos >= session.queue.length) { showEnd(); return; }
+  session.currentIdx = session.queue[session.pos];
+  const vocab = VOCAB[session.currentIdx];
+  let mode = activeMode === 'mix' ? session.modeSequence[session.pos] : activeMode;
+  if (mode === 'weak') {
+    const modes = ['mc','type','fill'];
+    mode = modes[Math.floor(Math.random() * 3)];
+  }
+  if      (mode==='card') showFlashcard(vocab);
+  else if (mode==='mc')   showMC(vocab);
+  else if (mode==='fill') showFill(vocab);
+  else                    showType(vocab);
+}
+function recordResult(correct) {
+  const p = progress[session.currentIdx];
+  p.total++;
+  if (correct) {
+    p.correct++; session.correct++;
+    if (p.correct>=3 && p.correct/p.total>=0.8) p.mastered=true;
+  } else { session.wrong++; }
+  saveProgress();
+}
+
+// ════════════════════════════════════════════════
+//  STEPS
+// ════════════════════════════════════════════════
+function renderSteps(id) {
+  const el=document.getElementById(id); el.innerHTML='';
+  session.queue.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='step'+(i<session.pos?' done':i===session.pos?' current':'');
+    el.appendChild(d);
+  });
+}
+function sessionInfo(id) {
+  const labels={card:'Karteikarten',mc:'Multiple Choice',type:'Tippen',fill:'Lückentext',mix:'Gemischt',weak:'Schwächste Wörter'};
+  document.getElementById(id).textContent=labels[activeMode]+' · '+(session.pos+1)+' / '+session.queue.length;
+}
+
+// ════════════════════════════════════════════════
+//  FLASHCARD
+// ════════════════════════════════════════════════
+let cardFlipped=false;
+function showFlashcard(vocab) {
+  cardFlipped=false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  document.getElementById('cardActions').style.display='none';
+  const isDE=direction==='de';
+  document.getElementById('cardFrontLabel').textContent = isDE ? 'Deutsch'  : 'Russisch';
+  document.getElementById('cardFrontWord').textContent  = isDE ? vocab.de   : vocab.ru;
+  document.getElementById('cardBackLabel').textContent  = isDE ? 'Russisch' : 'Deutsch';
+  document.getElementById('cardBackWord').textContent   = isDE ? vocab.ru   : vocab.de;
+  document.getElementById('cardTranslit').textContent   = isDE ? vocab.tr   : '';
+  renderSteps('stepsCard'); sessionInfo('sessionInfoCard');
+  showScreen('screenCard');
+  speakCurrent();
+}
+function flipCard() {
+  if(cardFlipped)return;
+  cardFlipped=true;
+  document.getElementById('cardInner').classList.add('flipped');
+  document.getElementById('cardActions').style.display='flex';
+}
+function flipCardBack() {
+  cardFlipped=false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  document.getElementById('cardActions').style.display='none';
+}
+function rateCard(knew) { recordResult(knew); session.pos++; showNext(); }
+
+// ════════════════════════════════════════════════
+//  MULTIPLE CHOICE
+// ════════════════════════════════════════════════
+function showMC(vocab) {
+  const isDE=direction==='de';
+  const correct=isDE ? vocab.ru : vocab.de;
+  document.getElementById('mcLabel').textContent = isDE ? 'Wie heißt auf Russisch …' : 'Was bedeutet auf Deutsch …';
+  document.getElementById('mcWord').textContent  = isDE ? vocab.de : vocab.ru;
+  document.getElementById('mcSub').textContent   = isDE ? '' : vocab.tr;
+
+  const distractors=shuffle(VOCAB.filter((_,i)=>i!==session.currentIdx)).slice(0,3).map(v=>isDE?v.ru:v.de);
+  const options=shuffle([correct,...distractors]);
+  const container=document.getElementById('mcOptions');
+  container.innerHTML='';
+  options.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='mc-opt'; btn.textContent=opt;
+    btn.onclick=()=>selectMC(btn,opt,correct);
+    container.appendChild(btn);
+  });
+  renderSteps('stepsMC'); sessionInfo('sessionInfoMC');
+  showScreen('screenMC');
+  speakCurrent();
+}
+function selectMC(btn,chosen,correct) {
+  document.querySelectorAll('.mc-opt').forEach(b=>{
+    b.classList.add('disabled');
+    if(b.textContent===correct) b.classList.add('correct');
+  });
+  const isCorrect=chosen===correct;
+  if(!isCorrect){btn.classList.remove('disabled');btn.classList.add('wrong');}
+  recordResult(isCorrect);
+  setTimeout(()=>{session.pos++;showNext();},900);
+}
+
+// ════════════════════════════════════════════════
+//  TYPE
+// ════════════════════════════════════════════════
+let typeChecked=false;
+function showType(vocab) {
+  typeChecked=false;
+  const isDE=direction==='de';
+  document.getElementById('typeLabel').textContent = isDE ? 'Wie heißt auf Russisch:' : 'Was bedeutet auf Deutsch:';
+  document.getElementById('typeWord').textContent  = isDE ? vocab.de : vocab.ru;
+  document.getElementById('typeSub').textContent   = isDE ? '' : vocab.tr;
+  const inp=document.getElementById('typeInput');
+  inp.value=''; inp.className='type-input'; inp.disabled=false;
+  inp.placeholder=isDE?'Russisch eingeben…':'Deutsch eingeben…';
+  inp.focus();
+  document.getElementById('typeFeedback').textContent='';
+  document.getElementById('typeFeedback').className='type-feedback';
+  document.getElementById('typeCheckBtn').textContent='Prüfen';
+  document.getElementById('typeCheckBtn').onclick=checkType;
+  renderSteps('stepsType'); sessionInfo('sessionInfoType');
+  showScreen('screenType');
+  speakCurrent();
+}
+function typeKeydown(e) {
+  if(e.key==='Enter'){if(!typeChecked)checkType();else{session.pos++;showNext();}}
+}
+function checkType() {
+  if(typeChecked)return;
+  const vocab=VOCAB[session.currentIdx]; const isDE=direction==='de';
+  const answer=document.getElementById('typeInput').value.trim();
+  const correct=isDE?vocab.ru:vocab.de;
+  const alts=isDE?[vocab.tr]:[];
+  const norm=s=>s.toLowerCase().replace(/[.,!?']/g,'').trim();
+  const isCorrect=norm(answer)===norm(correct)||alts.some(a=>norm(answer)===norm(a));
+  const inp=document.getElementById('typeInput');
+  const fb=document.getElementById('typeFeedback');
+  inp.disabled=true; inp.classList.add(isCorrect?'correct':'wrong');
+  fb.textContent=isCorrect?'✓ Richtig!':'✗ Richtige Antwort: '+correct;
+  fb.className='type-feedback '+(isCorrect?'correct':'wrong');
+  recordResult(isCorrect); typeChecked=true;
+  const btn=document.getElementById('typeCheckBtn');
+  btn.textContent='→ Weiter'; btn.onclick=()=>{session.pos++;showNext();};
+}
+
+// ════════════════════════════════════════════════
+//  FILL
+// ════════════════════════════════════════════════
+let fillChecked = false;
+function showFill(vocab) {
+  fillChecked = false;
+  const sentence = SENTENCES[session.currentIdx] || 'Wie heißt ___ auf Russisch?';
+
+  // Render sentence: split at ___ and highlight the gap
+  const parts = sentence.split('___');
+  const sentEl = document.getElementById('fillSentence');
+  sentEl.innerHTML = '';
+  parts.forEach((part, i) => {
+    sentEl.appendChild(document.createTextNode(part));
+    if (i < parts.length - 1) {
+      const gap = document.createElement('span');
+      gap.className = 'fill-gap';
+      gap.textContent = '___';
+      sentEl.appendChild(gap);
+    }
+  });
+
+  const inp = document.getElementById('fillInput');
+  inp.value = ''; inp.className = 'type-input'; inp.disabled = false;
+  inp.placeholder = 'Russisch eingeben…';
+  inp.focus();
+  document.getElementById('fillFeedback').textContent = '';
+  document.getElementById('fillFeedback').className = 'type-feedback';
+  document.getElementById('fillCheckBtn').textContent = 'Prüfen';
+  document.getElementById('fillCheckBtn').onclick = checkFill;
+  document.getElementById('fillSpeakBtn').style.display = 'none';
+  renderSteps('stepsFill'); sessionInfo('sessionInfoFill');
+  showScreen('screenFill');
+}
+function fillKeydown(e) {
+  if (e.key === 'Enter') { if (!fillChecked) checkFill(); else { session.pos++; showNext(); } }
+}
+function checkFill() {
+  if (fillChecked) return;
+  const vocab   = VOCAB[session.currentIdx];
+  const answer  = document.getElementById('fillInput').value.trim();
+  const correct = vocab.ru;
+  const norm    = s => s.toLowerCase().replace(/[.,!?'–\-]/g, '').trim();
+  const isCorrect = norm(answer) === norm(correct) || norm(answer) === norm(vocab.tr);
+
+  const inp = document.getElementById('fillInput');
+  const fb  = document.getElementById('fillFeedback');
+  inp.disabled = true;
+  inp.classList.add(isCorrect ? 'correct' : 'wrong');
+  fb.textContent  = isCorrect ? '✓ Richtig!' : '✗ Richtige Antwort: ' + correct;
+  fb.className    = 'type-feedback ' + (isCorrect ? 'correct' : 'wrong');
+
+  // Show sentence with correct word filled in
+  const sentence = SENTENCES[session.currentIdx] || '';
+  const parts    = sentence.split('___');
+  const sentEl   = document.getElementById('fillSentence');
+  if (parts.length >= 2) {
+    sentEl.innerHTML = '';
+    parts.forEach((part, i) => {
+      sentEl.appendChild(document.createTextNode(part));
+      if (i < parts.length - 1) {
+        const filled = document.createElement('span');
+        filled.className = 'fill-gap';
+        filled.style.background = isCorrect ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)';
+        filled.style.borderColor = isCorrect ? 'var(--success)' : 'var(--danger)';
+        filled.style.color       = isCorrect ? 'var(--success)' : 'var(--danger)';
+        filled.textContent = correct;
+        sentEl.appendChild(filled);
+      }
+    });
+  }
+
+  document.getElementById('fillSpeakBtn').style.display = 'inline-flex';
+  speakCurrent();
+  recordResult(isCorrect);
+  fillChecked = true;
+  const btn = document.getElementById('fillCheckBtn');
+  btn.textContent = '→ Weiter';
+  btn.onclick = () => { session.pos++; showNext(); };
+}
+
+// ════════════════════════════════════════════════
+//  SPEECH
+// ════════════════════════════════════════════════
+function speakCurrent() {
+  if(!('speechSynthesis' in window))return;
+  const vocab=VOCAB[session.currentIdx];
+  if(!vocab)return;
+  const u=new SpeechSynthesisUtterance(vocab.ru);
+  u.lang='ru-RU'; u.rate=0.85;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════
+//  SESSION END
+// ════════════════════════════════════════════════
+function showEnd() {
+  document.getElementById('endCorrect').textContent=session.correct;
+  document.getElementById('endWrong').textContent=session.wrong;
+  const total=session.correct+session.wrong;
+  const pct=total>0?Math.round(session.correct/total*100):0;
+  let msg='';
+  if(pct>=90) msg='Ausgezeichnet! Du hast fast alles richtig. 🔥';
+  else if(pct>=70) msg='Gut gemacht! Noch ein bisschen üben und du hast es drauf. 💪';
+  else if(pct>=50) msg='Solider Anfang! Die schwachen Wörter kommen öfter wieder. 🧠';
+  else msg='Nicht schlimm – Wiederholung ist der Schlüssel! 📚';
+  document.getElementById('endMsg').textContent=msg;
+  updateHomeStats(); showScreen('screenEnd');
+}
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — DATEN
+// ════════════════════════════════════════════════
+const GRAMMAR_TOPICS = [
+  {
+    id: 'conjugation',
+    icon: '🔤',
+    title: 'Konjugation',
+    desc: 'Verbendungen nach Person und Numerus (я, ты, он …)',
+    available: true,
+  },
+  {
+    id: 'genus',
+    icon: '⚥',
+    title: 'Genus',
+    desc: 'Maskulin, Feminin oder Neutral — Wörter richtig einordnen',
+    available: true,
+  },
+  {
+    id: 'cases',
+    icon: '🏛️',
+    title: 'Kasus',
+    desc: 'Die 6 russischen Fälle und ihre Verwendung',
+    available: false,
+  },
+  {
+    id: 'adjdecl',
+    icon: '🎨',
+    title: 'Adjektiv­deklination',
+    desc: 'Adjektive passen sich Genus und Kasus des Nomens an',
+    available: false,
+  },
+  {
+    id: 'aspects',
+    icon: '⏱️',
+    title: 'Verbalaspekte',
+    desc: 'Vollendet vs. unvollendet — der russische Aspekt erklärt',
+    available: false,
+  },
+  {
+    id: 'numbers',
+    icon: '🔢',
+    title: 'Zahlen & Kasus',
+    desc: 'Zahlen verändern den Kasus des folgenden Nomens',
+    available: false,
+  },
+];
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — KONJUGATION DATEN
+// ════════════════════════════════════════════════
+const CONJ_PERSONS = [
+  { label:'я',      de:'ich'     },
+  { label:'ты',     de:'du'      },
+  { label:'он/она', de:'er/sie'  },
+  { label:'мы',     de:'wir'     },
+  { label:'вы',     de:'ihr/Sie' },
+  { label:'они',    de:'sie'     },
+];
+
+const CONJ_VERBS = [
+  { inf:'говорить', de:'sprechen',  forms:['говорю','говоришь','говорит','говорим','говорите','говорят'] },
+  { inf:'быть',     de:'sein',      forms:['есть','есть','есть','есть','есть','есть'] },
+  { inf:'идти',     de:'gehen',     forms:['иду','идёшь','идёт','идём','идёте','идут'] },
+  { inf:'хотеть',   de:'wollen',    forms:['хочу','хочешь','хочет','хотим','хотите','хотят'] },
+  { inf:'делать',   de:'machen',    forms:['делаю','делаешь','делает','делаем','делаете','делают'] },
+  { inf:'знать',    de:'wissen',    forms:['знаю','знаешь','знает','знаем','знаете','знают'] },
+  { inf:'читать',   de:'lesen',     forms:['читаю','читаешь','читает','читаем','читаете','читают'] },
+  { inf:'писать',   de:'schreiben', forms:['пишу','пишешь','пишет','пишем','пишете','пишут'] },
+  { inf:'есть',     de:'essen',     forms:['ем','ешь','ест','едим','едите','едят'] },
+  { inf:'жить',     de:'leben',     forms:['живу','живёшь','живёт','живём','живёте','живут'] },
+];
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — GENUS DATEN
+//  genus: 'm' = maskulin, 'f' = feminin, 'n' = neutral
+//  hint:  kurze Erklärung warum (Endungsregel o.ä.)
+// ════════════════════════════════════════════════
+const GENUS_WORDS = [
+  // Aus VOCAB, mit Genus und Erklärung
+  {ru:'Привет',      de:'Hallo',           genus:'m', hint:'Interjektion — kein Genus nötig, hier ausnahmsweise m'},
+  {ru:'Дом',         de:'Haus',            genus:'m', hint:'Endet auf Konsonant → meist maskulin'},
+  {ru:'Стол',        de:'Tisch',           genus:'m', hint:'Endet auf Konsonant → meist maskulin'},
+  {ru:'Брат',        de:'Bruder',          genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Друг',        de:'Freund',          genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Город',       de:'Stadt',           genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Месяц',       de:'Monat',           genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'День',        de:'Tag',             genus:'m', hint:'Weiches Zeichen (ь) + männliches Konzept → maskulin'},
+  {ru:'Ключ',        de:'Schlüssel',       genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Дождь',       de:'Regen',           genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Ветер',       de:'Wind',            genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Лес',         de:'Wald',            genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Рынок',       de:'Markt',           genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Музей',       de:'Museum',          genus:'m', hint:'Endet auf -й → maskulin'},
+  {ru:'Чай',         de:'Tee',             genus:'m', hint:'Endet auf -й → maskulin'},
+  {ru:'Рис',         de:'Reis',            genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Суп',         de:'Suppe',           genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Хлеб',        de:'Brot',            genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Сыр',         de:'Käse',            genus:'m', hint:'Endet auf Konsonant → maskulin'},
+  {ru:'Дедушка',     de:'Opa / Großvater', genus:'m', hint:'Endet auf -а, aber männliches Wesen → maskulin (Ausnahme!)'},
+  {ru:'Мама',        de:'Mama',            genus:'f', hint:'Endet auf -а → meist feminin'},
+  {ru:'Кухня',       de:'Küche',           genus:'f', hint:'Endet auf -я → meist feminin'},
+  {ru:'Сестра',      de:'Schwester',       genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Мать',        de:'Mutter',          genus:'f', hint:'Weiches Zeichen (ь) + weibliches Konzept → feminin'},
+  {ru:'Дочь',        de:'Tochter',         genus:'f', hint:'Weiches Zeichen (ь) + weibliches Konzept → feminin'},
+  {ru:'Тётя',        de:'Tante',           genus:'f', hint:'Endet auf -я → feminin'},
+  {ru:'Бабушка',     de:'Oma / Großmutter',genus:'f', hint:'Endet auf -а + weibliches Wesen → feminin'},
+  {ru:'Подруга',     de:'Freundin',        genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Женщина',     de:'Frau',            genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Квартира',    de:'Wohnung',         genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Библиотека',  de:'Bibliothek',      genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Аптека',      de:'Apotheke',        genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Больница',    de:'Krankenhaus',     genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Улица',       de:'Straße',          genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Страна',      de:'Land (Staat)',    genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Школа',       de:'Schule',          genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Книга',       de:'Buch',            genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Лампа',       de:'Lampe',           genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Вода',        de:'Wasser',          genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Рыба',        de:'Fisch',           genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Неделя',      de:'Woche',           genus:'f', hint:'Endet auf -я → feminin'},
+  {ru:'Погода',      de:'Wetter',          genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Река',        de:'Fluss',           genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Гора',        de:'Berg',            genus:'f', hint:'Endet auf -а → feminin'},
+  {ru:'Цветок',      de:'Blume',           genus:'m', hint:'Endet auf Konsonant → maskulin (beachte: die Pflanze wäre feminin!)'},
+  {ru:'Дверь',       de:'Tür',             genus:'f', hint:'Weiches Zeichen (ь) → kann beides sein, hier feminin (Ausnahme!)'},
+  {ru:'Ночь',        de:'Nacht',           genus:'f', hint:'Weiches Zeichen (ь) + weibliches Konzept → feminin'},
+  {ru:'Окно',        de:'Fenster',         genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Молоко',      de:'Milch',           genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Море',        de:'Meer',            genus:'n', hint:'Endet auf -е → neutral'},
+  {ru:'Небо',        de:'Himmel',          genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Яйцо',        de:'Ei',             genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Яблоко',      de:'Apfel',           genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Сердце',      de:'Herz',            genus:'n', hint:'Endet auf -е → neutral'},
+  {ru:'Время',       de:'Zeit',            genus:'n', hint:'Endet auf -мя → neutral (seltene Klasse)'},
+  {ru:'Утро',        de:'Morgen (früh)',   genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Дерево',      de:'Baum',            genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Письмо',      de:'Brief',           genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Мясо',        de:'Fleisch',         genus:'n', hint:'Endet auf -о → neutral'},
+  {ru:'Метро',       de:'U-Bahn / Metro',  genus:'n', hint:'Fremdwort auf -о → neutral'},
+  {ru:'Кофе',        de:'Kaffee',          genus:'m', hint:'Fremdwort → traditionell maskulin (Ausnahme, endet auf -е!)'},
+];
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — INTRO-DATEN
+// ════════════════════════════════════════════════
+const GRAMMAR_INTROS = {
+  conjugation: {
+    icon: '🔤',
+    title: 'Konjugation',
+    rule: `Im Russischen wird das Verb nach Person und Numerus konjugiert – ähnlich wie im Deutschen, aber mit eigenen Endungen. Es gibt zwei Konjugationsklassen: Klasse I (Endung -ешь / -ет) und Klasse II (Endung -ишь / -ит). Anders als im Deutschen entfällt das Hilfsverb – "Я читаю" bedeutet einfach "Ich lese". Das Verb "быть" (sein) ist im Präsens fast unsichtbar: Man sagt "Я студент" (ich bin Student) ohne ein sichtbares Verb.`,
+    tableTitle: 'Konjugation von "говорить" (sprechen)',
+    rows: [
+      { label:'я',       ru:'говорю',    tr:'govoryu',    de:'ich spreche'    },
+      { label:'ты',      ru:'говоришь',  tr:'govorish\'', de:'du sprichst'    },
+      { label:'он/она',  ru:'говорит',   tr:'govorit\'',  de:'er/sie spricht' },
+      { label:'мы',      ru:'говорим',   tr:'govorim',    de:'wir sprechen'   },
+      { label:'вы',      ru:'говорите',  tr:'govorite',   de:'ihr sprecht'    },
+      { label:'они',     ru:'говорят',   tr:'govoryat',   de:'sie sprechen'   },
+    ],
+  },
+  genus: {
+    icon: '⚥',
+    title: 'Genus',
+    rule: `Jedes russische Substantiv hat ein grammatisches Geschlecht: maskulin (мужской), feminin (женский) oder neutral (средний). Das Genus beeinflusst Adjektive, Pronomen und Verbformen. Eine hilfreiche Faustregel: Wörter auf Konsonant sind meist maskulin (дом, стол), Wörter auf -а/-я meist feminin (мама, кухня), Wörter auf -о/-е meist neutral (окно, море). Ausnahmen gibt es aber immer – besonders bei weichen Zeichen (ь) am Ende, die sowohl maskulin als auch feminin sein können.`,
+    tableTitle: 'Beispiele nach Genus',
+    rows: [
+      { label:'Maskulin (м)',  ru:'дом',      tr:'dom',     de:'das Haus'       },
+      { label:'Maskulin (м)',  ru:'стол',     tr:'stol',    de:'der Tisch'      },
+      { label:'Maskulin (м)',  ru:'брат',     tr:'brat',    de:'der Bruder'     },
+      { label:'Feminin (ж)',   ru:'мама',     tr:'mama',    de:'die Mama'       },
+      { label:'Feminin (ж)',   ru:'кухня',    tr:'kukhnya', de:'die Küche'      },
+      { label:'Feminin (ж)',   ru:'дверь',    tr:'dver\'',  de:'die Tür (Ausn.)'},
+      { label:'Neutral (ср)', ru:'окно',     tr:'okno',    de:'das Fenster'    },
+      { label:'Neutral (ср)', ru:'молоко',   tr:'moloko',  de:'die Milch'      },
+      { label:'Neutral (ср)', ru:'море',     tr:'more',    de:'das Meer'       },
+    ],
+  },
+};
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — NAVIGATION & ÜBERSICHT
+// ════════════════════════════════════════════════
+function switchArea(area) {
+  document.getElementById('navVocab').classList.toggle('active',   area === 'vocab');
+  document.getElementById('navGrammar').classList.toggle('active', area === 'grammar');
+  if (area === 'vocab') {
+    loadProgress();
+    showScreen('screenHome');
+  } else {
+    showGrammar();
+  }
+}
+
+function showGrammar() {
+  renderGrammarGrid();
+  showScreen('screenGrammar');
+}
+
+function renderGrammarGrid() {
+  const grid = document.getElementById('grammarGrid');
+  grid.innerHTML = '';
+  GRAMMAR_TOPICS.forEach(topic => {
+    const card = document.createElement('div');
+    card.className = 'grammar-card' + (topic.available ? '' : ' locked');
+    if (topic.available) card.onclick = () => startGrammarTopic(topic.id);
+
+    const icon  = document.createElement('span'); icon.className  = 'grammar-card-icon';  icon.textContent  = topic.icon;
+    const title = document.createElement('span'); title.className = 'grammar-card-title'; title.textContent = topic.title;
+    const desc  = document.createElement('span'); desc.className  = 'grammar-card-desc';  desc.textContent  = topic.desc;
+    const badge = document.createElement('span');
+    badge.className = 'grammar-badge ' + (topic.available ? 'available' : 'locked');
+    badge.textContent = topic.available ? '✓ Verfügbar' : '🔒 Bald verfügbar';
+
+    card.appendChild(icon); card.appendChild(title);
+    card.appendChild(desc); card.appendChild(badge);
+    grid.appendChild(card);
+  });
+}
+
+let activeGrammarTopic = null;
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — KONJUGATIONS-TRAINER
+// ════════════════════════════════════════════════
+let conjProgress = {};   // { 'говорить_0': {correct, total}, … }
+let conjLevel    = 1;    // 1 = MC, 2 = Tippen
+let conjQueue    = [];   // [{verbIdx, personIdx}, …]
+let conjPos      = 0;
+let conjCorrect  = 0;
+let conjTypeChecked = false;
+
+function loadConjProgress() {
+  const raw = localStorage.getItem('rv_conj_progress');
+  if (raw) conjProgress = JSON.parse(raw);
+}
+function saveConjProgress() {
+  localStorage.setItem('rv_conj_progress', JSON.stringify(conjProgress));
+}
+function conjKey(vIdx, pIdx) { return vIdx + '_' + pIdx; }
+
+function buildConjQueue() {
+  const all = [];
+  CONJ_VERBS.forEach((_, vi) =>
+    CONJ_PERSONS.forEach((_, pi) => all.push({ vi, pi }))
+  );
+  // Sort: unseen first, then by error rate
+  all.sort((a, b) => {
+    const ka = conjKey(a.vi, a.pi), kb = conjKey(b.vi, b.pi);
+    const pa = conjProgress[ka] || { correct:0, total:0 };
+    const pb = conjProgress[kb] || { correct:0, total:0 };
+    const sa = pa.total === 0 ? 1 : 1 - pa.correct / pa.total;
+    const sb = pb.total === 0 ? 1 : 1 - pb.correct / pb.total;
+    return sb - sa;
+  });
+  return shuffle(all.slice(0, 20)).slice(0, 10);
+}
+
+function setConjLevel(lvl) {
+  conjLevel = lvl;
+  document.getElementById('conjBtnL1').classList.toggle('active', lvl === 1);
+  document.getElementById('conjBtnL2').classList.toggle('active', lvl === 2);
+  document.getElementById('conjLevelBadge').textContent =
+    lvl === 1 ? 'Stufe 1 · Multiple Choice' : 'Stufe 2 · Tippen';
+  document.getElementById('conjLevelBadge').className =
+    'g-level-badge ' + (lvl === 1 ? 'level1' : 'level2');
+  document.getElementById('conjMcArea').style.display   = lvl === 1 ? '' : 'none';
+  document.getElementById('conjTypeArea').style.display = lvl === 2 ? '' : 'none';
+  // Restart with new level
+  conjQueue = buildConjQueue();
+  conjPos = 0; conjCorrect = 0;
+  showConjQuestion();
+}
+
+function showConjQuestion() {
+  if (conjPos >= conjQueue.length) { showConjEnd(); return; }
+  const { vi, pi }  = conjQueue[conjPos];
+  const verb        = CONJ_VERBS[vi];
+  const person      = CONJ_PERSONS[pi];
+
+  document.getElementById('conjVerbInf').textContent  = verb.inf + ' (' + verb.de + ')';
+  document.getElementById('conjVerbDe').textContent   = '';
+  document.getElementById('conjPerson').textContent   = person.label;
+  document.getElementById('conjPersonDe').textContent = person.de;
+  updateConjProgress();
+
+  if (conjLevel === 1) showConjMC(verb, pi);
+  else                 showConjType();
+}
+
+function showConjMC(verb, correctPi) {
+  const correct = verb.forms[correctPi];
+  // Distractors: other forms of the same verb + forms from other verbs
+  const otherForms = verb.forms.filter((_, i) => i !== correctPi);
+  const extraForms = CONJ_VERBS
+    .filter(v => v.inf !== verb.inf)
+    .flatMap(v => v.forms);
+  const pool = shuffle([...new Set([...otherForms, ...extraForms])]).slice(0, 3);
+  const options = shuffle([correct, ...pool]);
+
+  const container = document.getElementById('conjMcOptions');
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-opt';
+    btn.textContent = opt;
+    btn.onclick = () => selectConjMC(btn, opt, correct, conjQueue[conjPos].vi, conjQueue[conjPos].pi);
+    container.appendChild(btn);
+  });
+}
+
+function selectConjMC(btn, chosen, correct, vi, pi) {
+  document.querySelectorAll('#conjMcOptions .mc-opt').forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === correct) b.classList.add('correct');
+  });
+  const isCorrect = chosen === correct;
+  if (!isCorrect) { btn.classList.remove('disabled'); btn.classList.add('wrong'); }
+  recordConjResult(vi, pi, isCorrect);
+  speakWord(correct);
+  setTimeout(() => { conjPos++; showConjQuestion(); }, 900);
+}
+
+function showConjType() {
+  conjTypeChecked = false;
+  const inp = document.getElementById('conjTypeInput');
+  inp.value = ''; inp.className = 'type-input'; inp.disabled = false;
+  inp.focus();
+  document.getElementById('conjTypeFeedback').textContent = '';
+  document.getElementById('conjTypeFeedback').className   = 'type-feedback';
+  document.getElementById('conjTypeCheckBtn').textContent = 'Prüfen';
+  document.getElementById('conjTypeCheckBtn').onclick     = checkConjType;
+}
+
+function conjTypeKeydown(e) {
+  if (e.key === 'Enter') { if (!conjTypeChecked) checkConjType(); else { conjPos++; showConjQuestion(); } }
+}
+
+function checkConjType() {
+  if (conjTypeChecked) return;
+  const { vi, pi } = conjQueue[conjPos];
+  const correct    = CONJ_VERBS[vi].forms[pi];
+  const answer     = document.getElementById('conjTypeInput').value.trim();
+  const norm       = s => s.toLowerCase().trim();
+  const isCorrect  = norm(answer) === norm(correct);
+
+  const inp = document.getElementById('conjTypeInput');
+  const fb  = document.getElementById('conjTypeFeedback');
+  inp.disabled = true;
+  inp.classList.add(isCorrect ? 'correct' : 'wrong');
+  fb.textContent = isCorrect ? '✓ Richtig!' : '✗ Richtig: ' + correct;
+  fb.className   = 'type-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  speakWord(correct);
+  recordConjResult(vi, pi, isCorrect);
+  conjTypeChecked = true;
+  const btn = document.getElementById('conjTypeCheckBtn');
+  btn.textContent = '→ Weiter';
+  btn.onclick = () => { conjPos++; showConjQuestion(); };
+}
+
+function recordConjResult(vi, pi, isCorrect) {
+  const k = conjKey(vi, pi);
+  if (!conjProgress[k]) conjProgress[k] = { correct:0, total:0 };
+  conjProgress[k].total++;
+  if (isCorrect) { conjProgress[k].correct++; conjCorrect++; }
+  saveConjProgress();
+  updateConjProgress();
+}
+
+function updateConjProgress() {
+  const total   = conjQueue.length;
+  const done    = conjPos;
+  const pct     = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('conjProgText').textContent  = done + ' / ' + total;
+  document.getElementById('conjProgFill').style.width  = pct + '%';
+  document.getElementById('conjScoreText').textContent = conjCorrect + ' ✓';
+}
+
+function showConjEnd() {
+  const total = conjQueue.length;
+  const pct   = total > 0 ? Math.round(conjCorrect / total * 100) : 0;
+  // Reuse the grammar intro screen with a summary message
+  document.getElementById('gIntroIcon').textContent  = pct >= 80 ? '🏆' : '📝';
+  document.getElementById('gIntroTitle').textContent = 'Session abgeschlossen!';
+  document.getElementById('gIntroRule').textContent  =
+    conjCorrect + ' von ' + total + ' richtig (' + pct + ' %). ' +
+    (pct >= 80 ? 'Ausgezeichnet!' : 'Übe weiter – du wirst besser!');
+  document.getElementById('gTableTitle').textContent = '';
+  document.getElementById('gTableRows').innerHTML    = '';
+
+  const startBtn = document.querySelector('#screenGrammarIntro .btn-primary');
+  if (startBtn) { startBtn.textContent = '↺ Nochmal'; }
+
+  showScreen('screenGrammarIntro');
+}
+
+// ════════════════════════════════════════════════
+//  GRAMMATIK — GENUS-TRAINER
+// ════════════════════════════════════════════════
+let genusProgress = {};
+let genusQueue    = [];
+let genusPos      = 0;
+let genusCorrect  = 0;
+
+const GENUS_LABELS = {
+  m: { label:'мужской',  de:'maskulin',  color:'var(--accent2)' },
+  f: { label:'женский',  de:'feminin',   color:'var(--danger)'  },
+  n: { label:'средний',  de:'neutral',   color:'var(--success)' },
+};
+
+function loadGenusProgress() {
+  const raw = localStorage.getItem('rv_genus_progress');
+  if (raw) genusProgress = JSON.parse(raw);
+}
+function saveGenusProgress() {
+  localStorage.setItem('rv_genus_progress', JSON.stringify(genusProgress));
+}
+
+function buildGenusQueue() {
+  const sorted = [...GENUS_WORDS].sort((a, b) => {
+    const pa = genusProgress[a.ru] || { correct:0, total:0 };
+    const pb = genusProgress[b.ru] || { correct:0, total:0 };
+    const sa = pa.total === 0 ? 1 : 1 - pa.correct / pa.total;
+    const sb = pb.total === 0 ? 1 : 1 - pb.correct / pb.total;
+    return sb - sa;
+  });
+  return shuffle(sorted.slice(0, 20)).slice(0, 10);
+}
+
+function startGenusExercise() {
+  loadGenusProgress();
+  genusQueue   = buildGenusQueue();
+  genusPos     = 0;
+  genusCorrect = 0;
+  showGenusQuestion();
+  showScreen('screenGenusExercise');
+}
+
+function showGenusQuestion() {
+  if (genusPos >= genusQueue.length) { showGenusEnd(); return; }
+  const word = genusQueue[genusPos];
+  document.getElementById('genusWord').textContent   = word.ru;
+  document.getElementById('genusWordDe').textContent = word.de;
+  document.getElementById('genusHint').style.display = 'none';
+  updateGenusProgress();
+
+  const container = document.getElementById('genusMcOptions');
+  container.innerHTML = '';
+  ['m','f','n'].forEach(g => {
+    const info = GENUS_LABELS[g];
+    const btn  = document.createElement('button');
+    btn.className   = 'mc-opt';
+    btn.style.borderColor = g === word.genus ? '' : '';
+    btn.innerHTML   = `<span style="display:block;font-size:0.78rem;font-weight:600">${info.label}</span><span style="font-size:0.68rem;color:var(--muted)">${info.de}</span>`;
+    btn.onclick     = () => selectGenus(btn, g, word);
+    container.appendChild(btn);
+  });
+
+  speakWord(word.ru);
+}
+
+function selectGenus(btn, chosen, word) {
+  const isCorrect = chosen === word.genus;
+  document.querySelectorAll('#genusMcOptions .mc-opt').forEach(b => b.classList.add('disabled'));
+
+  // Highlight correct answer
+  const allBtns = document.querySelectorAll('#genusMcOptions .mc-opt');
+  ['m','f','n'].forEach((g, i) => {
+    if (g === word.genus) allBtns[i].classList.add('correct');
+  });
+  if (!isCorrect) btn.classList.remove('disabled'), btn.classList.add('wrong');
+
+  // Show hint
+  document.getElementById('genusHintText').textContent = word.hint;
+  document.getElementById('genusHint').style.display   = '';
+
+  // Record
+  if (!genusProgress[word.ru]) genusProgress[word.ru] = { correct:0, total:0 };
+  genusProgress[word.ru].total++;
+  if (isCorrect) { genusProgress[word.ru].correct++; genusCorrect++; }
+  saveGenusProgress();
+  updateGenusProgress();
+
+  setTimeout(() => { genusPos++; showGenusQuestion(); }, 1400);
+}
+
+function updateGenusProgress() {
+  const total = genusQueue.length;
+  const done  = genusPos;
+  const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('genusProgText').textContent  = done + ' / ' + total;
+  document.getElementById('genusProgFill').style.width  = pct + '%';
+  document.getElementById('genusScoreText').textContent = genusCorrect + ' ✓';
+}
+
+function showGenusEnd() {
+  const total = genusQueue.length;
+  const pct   = total > 0 ? Math.round(genusCorrect / total * 100) : 0;
+  document.getElementById('gIntroIcon').textContent  = pct >= 80 ? '🏆' : '📝';
+  document.getElementById('gIntroTitle').textContent = 'Session abgeschlossen!';
+  document.getElementById('gIntroRule').textContent  =
+    genusCorrect + ' von ' + total + ' richtig (' + pct + ' %). ' +
+    (pct >= 80 ? 'Super! Das Genus sitzt gut.' : 'Weiter üben – die Endungsregeln helfen!');
+  document.getElementById('gTableTitle').textContent = '';
+  document.getElementById('gTableRows').innerHTML    = '';
+  const startBtn = document.querySelector('#screenGrammarIntro .btn-primary');
+  if (startBtn) startBtn.textContent = '↺ Nochmal';
+  showScreen('screenGrammarIntro');
+}
+
+function showGrammarIntroBack() {
+  // Reset start button text
+  const startBtn = document.querySelector('#screenGrammarIntro .btn-primary');
+  if (startBtn) startBtn.textContent = '▶ Jetzt üben';
+  startGrammarTopic(activeGrammarTopic);
+}
+
+function startGrammarTopic(id) {
+  activeGrammarTopic = id;
+  const intro = GRAMMAR_INTROS[id];
+  if (!intro) return;
+
+  document.getElementById('gIntroIcon').textContent  = intro.icon;
+  document.getElementById('gIntroTitle').textContent = intro.title;
+  document.getElementById('gIntroRule').textContent  = intro.rule;
+  document.getElementById('gTableTitle').textContent = intro.tableTitle;
+
+  const colCount = 5; // label | ru | tr | de | speak
+  const rowsEl = document.getElementById('gTableRows');
+  rowsEl.innerHTML = '';
+  intro.rows.forEach(row => {
+    const div = document.createElement('div');
+    div.className = 'grammar-table-row';
+    div.style.gridTemplateColumns = '1fr 1.1fr 1fr 1.2fr auto';
+
+    const label = document.createElement('span'); label.className = 'gtr-label'; label.textContent = row.label;
+    const ru    = document.createElement('span'); ru.className    = 'gtr-ru';    ru.textContent    = row.ru;
+    const tr    = document.createElement('span'); tr.className    = 'gtr-tr';    tr.textContent    = row.tr;
+    const de    = document.createElement('span'); de.className    = 'gtr-de';    de.textContent    = row.de;
+    const btn   = document.createElement('button'); btn.className = 'gtr-speak'; btn.textContent   = '🔊';
+    btn.onclick = () => speakWord(row.ru);
+
+    div.appendChild(label); div.appendChild(ru); div.appendChild(tr);
+    div.appendChild(de);    div.appendChild(btn);
+    rowsEl.appendChild(div);
+  });
+
+  showScreen('screenGrammarIntro');
+}
+
+function startGrammarExercise() {
+  if (activeGrammarTopic === 'conjugation') {
+    loadConjProgress();
+    conjQueue   = buildConjQueue();
+    conjPos     = 0;
+    conjCorrect = 0;
+    setConjLevel(conjLevel);          // renders level buttons + shows first question
+    showScreen('screenConjExercise');
+  } else if (activeGrammarTopic === 'genus') {
+    startGenusExercise();             // Phase 4
+  }
+}
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+renderCategoryPicker();
+loadProgress();
+loadConjProgress();
+</script>
+</body>
+</html>
+
     --text: #e8e8f0;
     --muted: #6b6b80;
     --success: #4ade80;
